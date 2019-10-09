@@ -314,7 +314,7 @@ int64_t TimeUTCMicros() {
 
 #elif defined(WEBRTC_WIN)
   struct _timeb time;
-  _ftime(&time);
+  _ftime_s(&time);
   // Convert from second (1.0) and milliseconds (1e-3).
   return (static_cast<int64_t>(time.time) * rtc::kNumMicrosecsPerSec +
           static_cast<int64_t>(time.millitm) * rtc::kNumMicrosecsPerMillisec);

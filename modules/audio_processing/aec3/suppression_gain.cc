@@ -22,6 +22,11 @@
 #include "rtc_base/atomic_ops.h"
 #include "rtc_base/checks.h"
 
+#ifdef max
+#undef max
+#undef min
+#endif
+
 namespace webrtc {
 namespace {
 

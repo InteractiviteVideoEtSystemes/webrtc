@@ -15,6 +15,11 @@
 
 #include <algorithm>
 
+#ifdef WEBRTC_WIN
+#undef min
+#undef max
+#endif
+
 namespace rtc {
 
 BufferQueue::BufferQueue(size_t capacity, size_t default_size)

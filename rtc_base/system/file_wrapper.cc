@@ -28,13 +28,15 @@ FILE* FileOpen(const char* file_name_utf8, bool read_only, int* error) {
   int len = MultiByteToWideChar(CP_UTF8, 0, file_name_utf8, -1, nullptr, 0);
   std::wstring wstr(len, 0);
   MultiByteToWideChar(CP_UTF8, 0, file_name_utf8, -1, &wstr[0], len);
-  FILE* file = _wfopen(wstr.c_str(), read_only ? L"rb" : L"wb");
+  FILE* file;
+  *error = _wfopen_s(&file, wstr.c_str(), read_only ? L"rb" : L"wb");
 #else
   FILE* file = fopen(file_name_utf8, read_only ? "rb" : "wb");
-#endif
   if (!file && error) {
     *error = errno;
   }
+#endif
+
   return file;
 }
 

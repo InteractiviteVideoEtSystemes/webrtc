@@ -18,6 +18,11 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/type_traits.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 namespace rtc {
 
 // tl;dr: rtc::ArrayView is the same thing as gsl::span from the Guideline

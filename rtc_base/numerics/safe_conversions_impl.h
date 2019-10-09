@@ -15,6 +15,11 @@
 
 #include <limits>
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 namespace rtc {
 namespace internal {
 

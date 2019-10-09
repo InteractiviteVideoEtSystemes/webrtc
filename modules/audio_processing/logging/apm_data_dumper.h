@@ -65,7 +65,7 @@ class ApmDataDumper {
   static void SetOutputDirectory(const std::string& output_dir) {
 #if WEBRTC_APM_DEBUG_DUMP == 1
     RTC_CHECK_LT(output_dir.size(), kOutputDirMaxLength);
-    strncpy(output_dir_, output_dir.c_str(), output_dir.size());
+    strncpy_s(output_dir_, output_dir.c_str(), output_dir.size());
 #endif
   }
 

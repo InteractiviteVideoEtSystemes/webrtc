@@ -9,7 +9,7 @@
  */
 
 #if defined(WEBRTC_WIN)
-#include <windows.h>
+//#include <windows.h>
 #if _MSC_VER < 1900
 #define snprintf _snprintf
 #endif
@@ -134,11 +134,17 @@ LogMessage::LogMessage(const char* file,
 
   if (err_ctx != ERRCTX_NONE) {
     char tmp_buf[1024];
+    char err_str[1024];
     SimpleStringBuilder tmp(tmp_buf);
     tmp.AppendFormat("[0x%08X]", err);
     switch (err_ctx) {
       case ERRCTX_ERRNO:
+#if defined(WEBRTC_WIN)
+        strerror_s(err_str, sizeof(err_str), err);
+        tmp << " " << err_str;
+#else
         tmp << " " << strerror(err);
+#endif
         break;
 #ifdef WEBRTC_WIN
       case ERRCTX_HRESULT: {

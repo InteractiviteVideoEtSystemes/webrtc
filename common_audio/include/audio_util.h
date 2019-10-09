@@ -20,6 +20,11 @@
 
 #include "rtc_base/checks.h"
 
+#if defined(max) && defined(WIN32)
+#undef min
+#undef max
+#endif
+
 namespace webrtc {
 
 typedef std::numeric_limits<int16_t> limits_int16;

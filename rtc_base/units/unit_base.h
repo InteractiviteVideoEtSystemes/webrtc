@@ -17,6 +17,12 @@
 #include <limits>
 #include <type_traits>
 
+#ifdef max
+#undef max
+#undef min
+#endif
+
+
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 

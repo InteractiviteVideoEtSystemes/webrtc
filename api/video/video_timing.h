@@ -16,6 +16,11 @@
 #include <limits>
 #include <string>
 
+#ifdef max
+#undef max
+#undef min
+#endif
+
 namespace webrtc {
 
 // Video timing timestamps in ms counted from capture_time_ms of a frame.

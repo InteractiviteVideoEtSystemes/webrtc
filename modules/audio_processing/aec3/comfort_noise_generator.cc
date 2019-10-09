@@ -27,6 +27,12 @@
 #include "modules/audio_processing/aec3/vector_math.h"
 #include "rtc_base/checks.h"
 
+#ifdef max
+#undef max
+#undef min
+#endif
+
+
 namespace webrtc {
 
 namespace {

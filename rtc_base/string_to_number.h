@@ -17,6 +17,11 @@
 
 #include "absl/types/optional.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 namespace rtc {
 
 // This file declares a family of functions to parse integers from strings.

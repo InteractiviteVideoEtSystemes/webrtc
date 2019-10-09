@@ -17,7 +17,10 @@ namespace webrtc {
 
 class ScopedRegisterThreadForDebugging {
  public:
-#if defined(WEBRTC_ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD)
+#if defined(WEBRTC_ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD) 
+  explicit ScopedRegisterThreadForDebugging(rtc::Location location);
+  ~ScopedRegisterThreadForDebugging();
+#elif defined(WEBRTC_WIN)
   explicit ScopedRegisterThreadForDebugging(rtc::Location location);
   ~ScopedRegisterThreadForDebugging();
 #else

@@ -36,6 +36,11 @@ extern "C" {
 #include "system_wrappers/include/cpu_features_wrapper.h"
 #include "system_wrappers/include/metrics.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 namespace webrtc {
 // Buffer size (samples)
 static const size_t kBufferSizeBlocks = 250;  // 1 second of audio in 16 kHz.

@@ -14,6 +14,11 @@
 #include "rtc_base/critical_section.h"
 #include "rtc_base/thread_annotations.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 // Default implementation of histogram methods for WebRTC clients that do not
 // want to provide their own implementation.
 
