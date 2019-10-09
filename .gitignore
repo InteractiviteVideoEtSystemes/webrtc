@@ -8,14 +8,10 @@
 *.rules
 *.scons
 *.sdf
-*.sln
 *.suo
 *.target.mk
 *.targets
 *.user
-*.vcproj
-*.vcxproj
-*.vcxproj.filters
 *.vpj
 *.vpw
 *.vpwhistu
@@ -68,5 +64,6 @@
 /rtc_tools/testing/browsertest/*
 /x86-generic_out/
 /xcodebuild
+rtc_tools/x64
 /.vscode
 !webrtc/*
