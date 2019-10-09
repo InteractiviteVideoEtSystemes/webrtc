@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{2dfe0c0e-117b-4833-8cd1-e93c34db0aa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system_wrappers">
+      <UniqueIdentifier>{977977cc-d204-45e3-8ff2-83ee3e4322f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{38139b45-25a0-48fa-b5ab-c6164442da4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings\headers">
+      <UniqueIdentifier>{dc8f68ee-e951-4ebd-aca5-8d549ef9a3fc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_builder.h">
+      <Filter>strings\headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="bit_buffer.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="buffer_queue.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="byte_buffer.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="logging.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="system\file_wrapper.cc">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="checks.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\clock.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\cpu_features.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\cpu_info.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\event.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\field_trial.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\metrics.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\rtp_to_ntp_estimator.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system_wrappers\source\sleep.cc">
+      <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="string_utils.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\audio_format_to_string.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_builder.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="critical_section.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="location.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="time_utils.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="system\thread_registry.cc">
+      <Filter>system</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

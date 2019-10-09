@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="isac">
+      <UniqueIdentifier>{46fce94e-9ace-435d-aeea-ab00da7ef613}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="codecs\isac\main\source\arith_routines.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\arith_routines_hist.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\arith_routines_logist.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\audio_decoder_isac.cc">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\audio_encoder_isac.cc">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\bandwidth_estimator.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\crc.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\decode.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\decode_bwe.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\encode_lpc_swb.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\entropy_coding.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\filter_functions.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\filterbanks.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\intialize.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\isac.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\isac_vad.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lattice.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lpc_analysis.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lpc_gain_swb_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lpc_shape_swb12_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lpc_shape_swb16_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\lpc_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\pitch_estimator.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\pitch_filter.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\pitch_gain_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\pitch_lag_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\spectrum_ar_model_tables.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+    <ClCompile Include="codecs\isac\main\source\transform.c">
+      <Filter>isac</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -64,6 +64,7 @@
 /rtc_tools/testing/browsertest/*
 /x86-generic_out/
 /xcodebuild
-rtc_tools/x64
+/rtc_tools/x64
+/modules/audio_coding/x64/
 /.vscode
 !webrtc/*

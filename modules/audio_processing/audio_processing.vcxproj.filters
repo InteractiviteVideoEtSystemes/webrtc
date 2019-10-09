@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="agc">
+      <UniqueIdentifier>{d781aa99-5e3b-4f86-b6f9-a3e2ed0cdda1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logging">
+      <UniqueIdentifier>{055572a3-d849-459f-b016-f1c876ad01ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="agc\headers">
+      <UniqueIdentifier>{83ba1353-1f45-463e-9022-3c7fb096cac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="aec">
+      <UniqueIdentifier>{e98cbac9-bd6e-4d09-9155-88df346a0399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="aec\headers">
+      <UniqueIdentifier>{bb707c18-81df-4437-b69f-f0500609be13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ns">
+      <UniqueIdentifier>{c2d9ca71-1045-4c91-b7a2-c3cb589b65a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utility">
+      <UniqueIdentifier>{d3d29b2d-e57e-43f3-8eb0-1fef0759d184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vad">
+      <UniqueIdentifier>{2191b682-d4ad-4e5b-b833-f12c614c6f7b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="agc\agc.h">
+      <Filter>agc\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="agc\agc_manager_direct.h">
+      <Filter>agc\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="aec\aec_common.h">
+      <Filter>aec\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="aec\aec_core.h">
+      <Filter>aec\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="aec\echo_cancellation.h">
+      <Filter>aec\headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="agc\agc.cc">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="agc\agc_manager_direct.cc">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="agc\loudness_histogram.cc">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="agc\utility.cc">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="logging\apm_data_dumper.cc">
+      <Filter>logging</Filter>
+    </ClCompile>
+    <ClCompile Include="aec\aec_core_sse2.cc">
+      <Filter>aec</Filter>
+    </ClCompile>
+    <ClCompile Include="aec\aec_resampler.cc">
+      <Filter>aec</Filter>
+    </ClCompile>
+    <ClCompile Include="aec\echo_cancellation.cc">
+      <Filter>aec</Filter>
+    </ClCompile>
+    <ClCompile Include="ns\noise_suppression.c">
+      <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="ns\noise_suppression_x.c">
+      <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="ns\nsx_core.c">
+      <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="ns\nsx_core_c.c">
+      <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\block_mean_calculator.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\cascaded_biquad_filter.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\delay_estimator.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\delay_estimator_wrapper.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\ooura_fft_sse2.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\ooura_fft.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="aec\aec_core.cc">
+      <Filter>aec</Filter>
+    </ClCompile>
+    <ClCompile Include="ns\ns_core.c">
+      <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\standalone_vad.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\vad_audio_proc.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\vad_circular_buffer.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\voice_activity_detector.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\pitch_based_vad.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\pole_zero_filter.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\gmm.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="vad\pitch_internal.cc">
+      <Filter>vad</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
