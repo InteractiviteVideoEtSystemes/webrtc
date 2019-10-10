@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="rnnoise">
+      <UniqueIdentifier>{6d417aab-9df1-4609-978f-0f370151df32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rnnoise\src">
+      <UniqueIdentifier>{9a12602b-3375-4b41-b8a4-71c860a1ba73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rnnoise\headers">
+      <UniqueIdentifier>{9ddf9222-d78c-4140-a8e1-0d4313756394}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rnnoise\src\rnn_vad_weights.cc">
+      <Filter>rnnoise\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rnnoise\src\rnn_activations.h">
+      <Filter>rnnoise\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="rnnoise\src\rnn_vad_weights.h">
+      <Filter>rnnoise\headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
