@@ -1,3 +1,0 @@
-[submodule "abseil-cpp/abseil-cpp"]
-	path = abseil-cpp/abseil-cpp
-	url = https://github.com/abseil/abseil-cpp
