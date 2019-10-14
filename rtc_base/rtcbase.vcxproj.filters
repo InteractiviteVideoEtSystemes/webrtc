@@ -28,6 +28,18 @@
     <Filter Include="memory">
       <UniqueIdentifier>{6bf52814-0148-486b-bd84-17c93e772bd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="synchronization">
+      <UniqueIdentifier>{1dd78778-7b23-4c7e-bb4e-82134ea70d75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="numerics">
+      <UniqueIdentifier>{342251a8-aa51-4706-b394-6d103a16a296}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{23cf1dc8-ee22-45af-9d8e-e6c816a718ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api\task_queue">
+      <UniqueIdentifier>{325e801c-7279-44ad-bfc8-447c329c8a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -107,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="win32.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\task_queue\default_task_queue_factory.h">
+      <Filter>api\task_queue</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +388,36 @@
     </ClCompile>
     <ClCompile Include="..\system_wrappers\source\event_wrapper.cc">
       <Filter>system_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\rw_lock_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\rw_lock_wrapper.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\sequence_checker.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\yield_policy.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="numerics\exp_filter.cc">
+      <Filter>numerics</Filter>
+    </ClCompile>
+    <ClCompile Include="numerics\moving_average.cc">
+      <Filter>numerics</Filter>
+    </ClCompile>
+    <ClCompile Include="numerics\sample_counter.cc">
+      <Filter>numerics</Filter>
+    </ClCompile>
+    <ClCompile Include="numerics\samples_stats_counter.cc">
+      <Filter>numerics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\api\task_queue\default_task_queue_factory_win.cc">
+      <Filter>api\task_queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\api\task_queue\task_queue_base.cc">
+      <Filter>api\task_queue</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

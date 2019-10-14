@@ -34,6 +34,12 @@
     <Filter Include="synchronization\internal">
       <UniqueIdentifier>{03243d96-45ee-4723-8833-6e18cf17ba4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="types">
+      <UniqueIdentifier>{87f52cbe-b4ad-4d0f-809b-8f83b934ed56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="types\internal">
+      <UniqueIdentifier>{227a8a6e-8fa2-425f-a71b-935d426375fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\abseil-cpp\absl\base\dynamic_annotations.cc">
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\waiter.cc">
       <Filter>synchronization\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\types\bad_optional_access.cc">
+      <Filter>types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

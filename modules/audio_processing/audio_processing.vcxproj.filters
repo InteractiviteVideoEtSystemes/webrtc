@@ -43,6 +43,18 @@
     <Filter Include="agc\agc2\rnn">
       <UniqueIdentifier>{34380243-0429-4788-b3fe-9b90e4e2fbbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{051cb251-564a-4fdd-a32e-f3d0202c83a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api\audio">
+      <UniqueIdentifier>{78881015-51e7-4adf-a57f-0ad121d4a134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="aec3">
+      <UniqueIdentifier>{23cdd891-e6d7-4111-8b9d-5af9a795c94d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="echo_detector">
+      <UniqueIdentifier>{b75dd766-d513-4935-b51d-0e3fb3384fe9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -65,6 +77,24 @@
     </ClInclude>
     <ClInclude Include="aec\echo_cancellation.h">
       <Filter>aec\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\audio_frame.h">
+      <Filter>api\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\audio_mixer.h">
+      <Filter>api\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\channel_layout.h">
+      <Filter>api\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\echo_canceller3_config.h">
+      <Filter>api\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\echo_canceller3_factory.h">
+      <Filter>api\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\api\audio\echo_control.h">
+      <Filter>api\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +274,192 @@
     </ClCompile>
     <ClCompile Include="agc2\rnn_vad\rnn.cc">
       <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\api\audio\audio_frame.cc">
+      <Filter>api\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\api\audio\channel_layout.cc">
+      <Filter>api\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\api\audio\echo_canceller3_config.cc">
+      <Filter>api\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\api\audio\echo_canceller3_factory.cc">
+      <Filter>api\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\adaptive_fir_filter.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\adaptive_fir_filter_erl.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\aec_state.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\aec3_fft.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\api_call_jitter_metrics.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\block_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\block_delay_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\block_framer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\block_processor.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\block_processor_metrics.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\comfort_noise_generator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\decimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\downsampled_render_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_audibility.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_canceller3.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_path_delay_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_path_variability.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_remover.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\echo_remover_metrics.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\erl_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\erle_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\fft_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\filter_analyzer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\frame_blocker.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\fullband_erle_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\main_filter_update_gain.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\matched_filter.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\matched_filter_lag_aggregator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\moving_average.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_delay_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_delay_controller.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_delay_controller_metrics.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_reverb_model.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\residual_echo_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\reverb_decay_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\reverb_frequency_response.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\reverb_model.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\reverb_model_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\signal_dependent_erle_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\spectrum_buffer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\subband_erle_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\subtractor_output.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\subtractor_output_analyzer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\suppression_filter.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\suppression_gain.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\stationarity_estimator.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\aec3_common.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\clockdrift_detector.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="high_pass_filter.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="residual_echo_detector.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\render_signal_analyzer.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="echo_detector\circular_buffer.cc">
+      <Filter>echo_detector</Filter>
+    </ClCompile>
+    <ClCompile Include="echo_detector\mean_variance_estimator.cc">
+      <Filter>echo_detector</Filter>
+    </ClCompile>
+    <ClCompile Include="echo_detector\moving_max.cc">
+      <Filter>echo_detector</Filter>
+    </ClCompile>
+    <ClCompile Include="echo_detector\normalized_covariance_estimator.cc">
+      <Filter>echo_detector</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\subtractor.cc">
+      <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="aec3\shadow_filter_update_gain.cc">
+      <Filter>aec3</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

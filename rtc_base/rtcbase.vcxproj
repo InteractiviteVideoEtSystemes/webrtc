@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\api\task_queue\default_task_queue_factory.h" />
     <ClInclude Include="async_invoker.h" />
     <ClInclude Include="async_packet_socket.h" />
     <ClInclude Include="async_resolver_interface.h" />
@@ -179,6 +180,8 @@
     <ClInclude Include="win32.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\api\task_queue\default_task_queue_factory_win.cc" />
+    <ClCompile Include="..\api\task_queue\task_queue_base.cc" />
     <ClCompile Include="..\system_wrappers\source\clock.cc" />
     <ClCompile Include="..\system_wrappers\source\cpu_features.cc" />
     <ClCompile Include="..\system_wrappers\source\cpu_info.cc" />
@@ -229,6 +232,10 @@
     <ClCompile Include="net_helper.cc" />
     <ClCompile Include="net_helpers.cc" />
     <ClCompile Include="null_socket_server.cc" />
+    <ClCompile Include="numerics\exp_filter.cc" />
+    <ClCompile Include="numerics\moving_average.cc" />
+    <ClCompile Include="numerics\samples_stats_counter.cc" />
+    <ClCompile Include="numerics\sample_counter.cc" />
     <ClCompile Include="physical_socket_server.cc" />
     <ClCompile Include="platform_thread.cc" />
     <ClCompile Include="platform_thread_types.cc" />
@@ -260,6 +267,10 @@
     <ClCompile Include="string_encode.cc" />
     <ClCompile Include="string_to_number.cc" />
     <ClCompile Include="string_utils.cc" />
+    <ClCompile Include="synchronization\rw_lock_win.cc" />
+    <ClCompile Include="synchronization\rw_lock_wrapper.cc" />
+    <ClCompile Include="synchronization\sequence_checker.cc" />
+    <ClCompile Include="synchronization\yield_policy.cc" />
     <ClCompile Include="system\file_wrapper.cc" />
     <ClCompile Include="system\thread_registry.cc" />
     <ClCompile Include="task_queue.cc" />
