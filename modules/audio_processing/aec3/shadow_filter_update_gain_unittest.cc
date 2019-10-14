@@ -44,11 +44,11 @@ void RunFilterUpdateTest(int num_blocks_to_process,
   AdaptiveFirFilter main_filter(config.filter.main.length_blocks,
                                 config.filter.main.length_blocks,
                                 config.filter.config_change_duration_blocks, 1,
-                                1, DetectOptimization(), &data_dumper);
+                                DetectOptimization(), &data_dumper);
   AdaptiveFirFilter shadow_filter(config.filter.shadow.length_blocks,
                                   config.filter.shadow.length_blocks,
                                   config.filter.config_change_duration_blocks,
-                                  1, 1, DetectOptimization(), &data_dumper);
+                                  1, DetectOptimization(), &data_dumper);
   Aec3Fft fft;
 
   constexpr int kSampleRateHz = 48000;
@@ -64,7 +64,6 @@ void RunFilterUpdateTest(int num_blocks_to_process,
       std::vector<std::vector<float>>(num_render_channels,
                                       std::vector<float>(kBlockSize, 0.f)));
   std::array<float, kBlockSize> y;
-  AecState aec_state(config);
   RenderSignalAnalyzer render_signal_analyzer(config);
   std::array<float, kFftLength> s;
   FftData S;

@@ -365,8 +365,10 @@ class PeerConnection : public PeerConnectionInternal,
   // Field-trial based configuration for datagram transport data channels.
   struct DatagramTransportDataChannelConfig {
     explicit DatagramTransportDataChannelConfig(const std::string& field_trial)
-        : enabled("enabled", true), default_value("default_value", false) {
-      ParseFieldTrial({&enabled, &default_value}, field_trial);
+        : enabled("enabled", true),
+          default_value("default_value", false),
+          receive_only("receive_only", false) {
+      ParseFieldTrial({&enabled, &default_value, &receive_only}, field_trial);
     }
 
     // Whether datagram transport data channel support is enabled at all.
@@ -382,6 +384,39 @@ class PeerConnection : public PeerConnectionInternal,
     // applications will use the datagram transport by default (but may still
     // explicitly configure themselves not to use it through RTCConfiguration).
     FieldTrialFlag default_value;
+
+    // Whether the datagram transport is enabled in receive-only mode.  If true,
+    // and if the datagram transport is enabled, it will only be used when
+    // receiving incoming calls, not when placing outgoing calls.
+    FieldTrialFlag receive_only;
+  };
+
+  // Captures partial state to be used for rollback. Applicable only in
+  // Unified Plan.
+  class TransceiverStableState {
+   public:
+    TransceiverStableState() {}
+    TransceiverStableState(RtpTransceiverDirection direction,
+                           absl::optional<std::string> mid,
+                           absl::optional<size_t> mline_index,
+                           bool newly_created)
+        : direction_(direction),
+          mid_(mid),
+          mline_index_(mline_index),
+          newly_created_(newly_created) {}
+    RtpTransceiverDirection direction() const { return direction_; }
+    absl::optional<std::string> mid() const { return mid_; }
+    absl::optional<size_t> mline_index() const { return mline_index_; }
+    bool newly_created() const { return newly_created_; }
+
+   private:
+    RtpTransceiverDirection direction_ = RtpTransceiverDirection::kRecvOnly;
+    absl::optional<std::string> mid_;
+    absl::optional<size_t> mline_index_;
+    // Indicates that the transceiver was created as part of applying a
+    // description to track potential need for removing transceiver during
+    // rollback.
+    bool newly_created_ = false;
   };
 
   // Implements MessageHandler.
@@ -872,7 +907,7 @@ class PeerConnection : public PeerConnectionInternal,
       const std::vector<cricket::RelayServerConfig>& turn_servers,
       IceTransportsType type,
       int candidate_pool_size,
-      bool prune_turn_ports,
+      PortPrunePolicy turn_port_prune_policy,
       webrtc::TurnCustomizer* turn_customizer,
       absl::optional<int> stun_candidate_keepalive_interval,
       bool have_local_description);
@@ -1158,6 +1193,7 @@ class PeerConnection : public PeerConnectionInternal,
 
   void UpdateNegotiationNeeded();
   bool CheckIfNegotiationIsNeeded();
+  RTCError Rollback();
 
   sigslot::signal1<DataChannel*> SignalDataChannelCreated_
       RTC_GUARDED_BY(signaling_thread());
@@ -1196,7 +1232,8 @@ class PeerConnection : public PeerConnectionInternal,
   const DatagramTransportConfig datagram_transport_config_;
 
   // Field-trial based configuration for datagram transport data channels.
-  const DatagramTransportConfig datagram_transport_data_channel_config_;
+  const DatagramTransportDataChannelConfig
+      datagram_transport_data_channel_config_;
 
   // Final, resolved value for whether datagram transport is in use.
   bool use_datagram_transport_ RTC_GUARDED_BY(signaling_thread()) = false;
@@ -1204,6 +1241,10 @@ class PeerConnection : public PeerConnectionInternal,
   // Equivalent of |use_datagram_transport_|, but for its use with data
   // channels.
   bool use_datagram_transport_for_data_channels_
+      RTC_GUARDED_BY(signaling_thread()) = false;
+
+  // Resolved value of whether to use data channels only for incoming calls.
+  bool use_datagram_transport_for_data_channels_receive_only_
       RTC_GUARDED_BY(signaling_thread()) = false;
 
   // Cache configuration_.use_media_transport so that we can access it from
@@ -1274,7 +1315,11 @@ class PeerConnection : public PeerConnectionInternal,
       RTC_GUARDED_BY(signaling_thread());  // A pointer is passed to senders_
   rtc::scoped_refptr<RTCStatsCollector> stats_collector_
       RTC_GUARDED_BY(signaling_thread());
-
+  // Holds changes made to transceivers during applying descriptors for
+  // potential rollback. Gets cleared once signaling state goes to stable.
+  std::map<rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>,
+           TransceiverStableState>
+      transceiver_stable_states_by_transceivers_;
   std::vector<
       rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
       transceivers_;  // TODO(bugs.webrtc.org/9987): Accessed on both signaling

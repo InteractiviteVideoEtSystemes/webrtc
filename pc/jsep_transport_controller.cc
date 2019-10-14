@@ -447,7 +447,8 @@ void JsepTransportController::SetMediaTransportSettings(
     bool use_media_transport_for_media,
     bool use_media_transport_for_data_channels,
     bool use_datagram_transport,
-    bool use_datagram_transport_for_data_channels) {
+    bool use_datagram_transport_for_data_channels,
+    bool use_datagram_transport_for_data_channels_receive_only) {
   RTC_DCHECK(use_media_transport_for_media ==
                  config_.use_media_transport_for_media ||
              jsep_transports_by_name_.empty())
@@ -466,6 +467,18 @@ void JsepTransportController::SetMediaTransportSettings(
   config_.use_datagram_transport = use_datagram_transport;
   config_.use_datagram_transport_for_data_channels =
       use_datagram_transport_for_data_channels;
+  config_.use_datagram_transport_for_data_channels_receive_only =
+      use_datagram_transport_for_data_channels_receive_only;
+}
+
+void JsepTransportController::RollbackTransportForMid(const std::string& mid) {
+  if (!network_thread_->IsCurrent()) {
+    network_thread_->Invoke<void>(RTC_FROM_HERE,
+                                  [=] { RollbackTransportForMid(mid); });
+    return;
+  }
+  RemoveTransportForMid(mid);
+  MaybeDestroyJsepTransport(mid);
 }
 
 std::unique_ptr<cricket::IceTransportInternal>
@@ -641,9 +654,16 @@ RTCError JsepTransportController::ApplyDescription_n(
   }
 
   std::vector<int> merged_encrypted_extension_ids;
+  absl::optional<std::string> bundle_media_alt_protocol;
+  absl::optional<std::string> bundle_data_alt_protocol;
   if (bundle_group_) {
     merged_encrypted_extension_ids =
         MergeEncryptedHeaderExtensionIdsForBundle(description);
+    error = GetAltProtocolsForBundle(description, &bundle_media_alt_protocol,
+                                     &bundle_data_alt_protocol);
+    if (!error.ok()) {
+      return error;
+    }
   }
 
   for (const cricket::ContentInfo& content_info : description->contents()) {
@@ -662,6 +682,8 @@ RTCError JsepTransportController::ApplyDescription_n(
              description->transport_infos().size());
   for (size_t i = 0; i < description->contents().size(); ++i) {
     const cricket::ContentInfo& content_info = description->contents()[i];
+    const cricket::MediaContentDescription* media_description =
+        content_info.media_description();
     const cricket::TransportInfo& transport_info =
         description->transport_infos()[i];
     if (content_info.rejected) {
@@ -683,10 +705,23 @@ RTCError JsepTransportController::ApplyDescription_n(
     }
 
     std::vector<int> extension_ids;
+    absl::optional<std::string> media_alt_protocol;
+    absl::optional<std::string> data_alt_protocol;
     if (bundled_mid() && content_info.name == *bundled_mid()) {
       extension_ids = merged_encrypted_extension_ids;
+      media_alt_protocol = bundle_media_alt_protocol;
+      data_alt_protocol = bundle_data_alt_protocol;
     } else {
       extension_ids = GetEncryptedHeaderExtensionIds(content_info);
+      switch (media_description->type()) {
+        case cricket::MEDIA_TYPE_AUDIO:
+        case cricket::MEDIA_TYPE_VIDEO:
+          media_alt_protocol = media_description->alt_protocol();
+          break;
+        case cricket::MEDIA_TYPE_DATA:
+          data_alt_protocol = media_description->alt_protocol();
+          break;
+      }
     }
 
     int rtp_abs_sendtime_extn_id =
@@ -700,7 +735,8 @@ RTCError JsepTransportController::ApplyDescription_n(
 
     cricket::JsepTransportDescription jsep_description =
         CreateJsepTransportDescription(content_info, transport_info,
-                                       extension_ids, rtp_abs_sendtime_extn_id);
+                                       extension_ids, rtp_abs_sendtime_extn_id,
+                                       media_alt_protocol, data_alt_protocol);
     if (local) {
       error =
           transport->SetLocalJsepTransportDescription(jsep_description, type);
@@ -893,7 +929,9 @@ JsepTransportController::CreateJsepTransportDescription(
     const cricket::ContentInfo& content_info,
     const cricket::TransportInfo& transport_info,
     const std::vector<int>& encrypted_extension_ids,
-    int rtp_abs_sendtime_extn_id) {
+    int rtp_abs_sendtime_extn_id,
+    absl::optional<std::string> media_alt_protocol,
+    absl::optional<std::string> data_alt_protocol) {
   const cricket::MediaContentDescription* content_desc =
       content_info.media_description();
   RTC_DCHECK(content_desc);
@@ -903,7 +941,8 @@ JsepTransportController::CreateJsepTransportDescription(
 
   return cricket::JsepTransportDescription(
       rtcp_mux_enabled, content_desc->cryptos(), encrypted_extension_ids,
-      rtp_abs_sendtime_extn_id, transport_info.description);
+      rtp_abs_sendtime_extn_id, transport_info.description, media_alt_protocol,
+      data_alt_protocol);
 }
 
 bool JsepTransportController::ShouldUpdateBundleGroup(
@@ -967,6 +1006,55 @@ JsepTransportController::MergeEncryptedHeaderExtensionIdsForBundle(
     }
   }
   return merged_ids;
+}
+
+RTCError JsepTransportController::GetAltProtocolsForBundle(
+    const cricket::SessionDescription* description,
+    absl::optional<std::string>* media_alt_protocol,
+    absl::optional<std::string>* data_alt_protocol) {
+  RTC_DCHECK(description);
+  RTC_DCHECK(bundle_group_);
+  RTC_DCHECK(media_alt_protocol);
+  RTC_DCHECK(data_alt_protocol);
+
+  bool found_media = false;
+  bool found_data = false;
+  for (const cricket::ContentInfo& content : description->contents()) {
+    if (bundle_group_->HasContentName(content.name)) {
+      const cricket::MediaContentDescription* media_description =
+          content.media_description();
+      switch (media_description->type()) {
+        case cricket::MEDIA_TYPE_AUDIO:
+        case cricket::MEDIA_TYPE_VIDEO:
+          if (found_media &&
+              *media_alt_protocol != media_description->alt_protocol()) {
+            return RTCError(RTCErrorType::INVALID_PARAMETER,
+                            "The BUNDLE group contains conflicting "
+                            "alt-protocols for media ('" +
+                                media_alt_protocol->value_or("") + "' and '" +
+                                media_description->alt_protocol().value_or("") +
+                                "')");
+          }
+          found_media = true;
+          *media_alt_protocol = media_description->alt_protocol();
+          break;
+        case cricket::MEDIA_TYPE_DATA:
+          if (found_data &&
+              *data_alt_protocol != media_description->alt_protocol()) {
+            return RTCError(RTCErrorType::INVALID_PARAMETER,
+                            "The BUNDLE group contains conflicting "
+                            "alt-protocols for data ('" +
+                                data_alt_protocol->value_or("") + "' and '" +
+                                media_description->alt_protocol().value_or("") +
+                                "')");
+          }
+          found_data = true;
+          *data_alt_protocol = media_description->alt_protocol();
+          break;
+      }
+    }
+  }
+  return RTCError::OK();
 }
 
 int JsepTransportController::GetRtpAbsSendTimeHeaderExtensionId(
@@ -1794,6 +1882,10 @@ JsepTransportController::GetTransportParameters(const std::string& mid) {
 
   RTC_DCHECK(!local_desc_ && !remote_desc_)
       << "JsepTransport should exist for every mid once any description is set";
+
+  if (config_.use_datagram_transport_for_data_channels_receive_only) {
+    return absl::nullopt;
+  }
 
   // Need to generate a transport for the offer.
   if (!offer_datagram_transport_) {

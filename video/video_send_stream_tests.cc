@@ -13,6 +13,7 @@
 
 #include "absl/algorithm/container.h"
 #include "api/task_queue/default_task_queue_factory.h"
+#include "api/task_queue/task_queue_base.h"
 #include "api/test/simulated_network.h"
 #include "api/video/builtin_video_bitrate_allocator_factory.h"
 #include "api/video/encoded_image.h"
@@ -554,8 +555,8 @@ class UlpfecObserver : public test::EndToEndTest {
     return SEND_PACKET;
   }
 
-  test::PacketTransport* CreateSendTransport(
-      test::DEPRECATED_SingleThreadedTaskQueueForTesting* task_queue,
+  std::unique_ptr<test::PacketTransport> CreateSendTransport(
+      TaskQueueBase* task_queue,
       Call* sender_call) override {
     // At low RTT (< kLowRttNackMs) -> NACK only, no FEC.
     // Configure some network delay.
@@ -563,7 +564,7 @@ class UlpfecObserver : public test::EndToEndTest {
     BuiltInNetworkBehaviorConfig config;
     config.loss_percent = 5;
     config.queue_delay_ms = kNetworkDelayMs;
-    return new test::PacketTransport(
+    return std::make_unique<test::PacketTransport>(
         task_queue, sender_call, this, test::PacketTransport::kSender,
         VideoSendStreamTest::payload_type_map_,
         std::make_unique<FakeNetworkPipe>(
@@ -751,8 +752,8 @@ class FlexfecObserver : public test::EndToEndTest {
     return SEND_PACKET;
   }
 
-  test::PacketTransport* CreateSendTransport(
-      test::DEPRECATED_SingleThreadedTaskQueueForTesting* task_queue,
+  std::unique_ptr<test::PacketTransport> CreateSendTransport(
+      TaskQueueBase* task_queue,
       Call* sender_call) override {
     // At low RTT (< kLowRttNackMs) -> NACK only, no FEC.
     // Therefore we need some network delay.
@@ -760,8 +761,23 @@ class FlexfecObserver : public test::EndToEndTest {
     BuiltInNetworkBehaviorConfig config;
     config.loss_percent = 5;
     config.queue_delay_ms = kNetworkDelayMs;
-    return new test::PacketTransport(
+    return std::make_unique<test::PacketTransport>(
         task_queue, sender_call, this, test::PacketTransport::kSender,
+        VideoSendStreamTest::payload_type_map_,
+        std::make_unique<FakeNetworkPipe>(
+            Clock::GetRealTimeClock(),
+            std::make_unique<SimulatedNetwork>(config)));
+  }
+
+  std::unique_ptr<test::PacketTransport> CreateReceiveTransport(
+      TaskQueueBase* task_queue) override {
+    // We need the RTT to be >200 ms to send FEC and the network delay for the
+    // send transport is 100 ms, so add 100 ms (but no loss) on the return link.
+    BuiltInNetworkBehaviorConfig config;
+    config.loss_percent = 0;
+    config.queue_delay_ms = 100;
+    return std::make_unique<test::PacketTransport>(
+        task_queue, nullptr, this, test::PacketTransport::kReceiver,
         VideoSendStreamTest::payload_type_map_,
         std::make_unique<FakeNetworkPipe>(
             Clock::GetRealTimeClock(),
@@ -1531,15 +1547,15 @@ TEST_F(VideoSendStreamTest, PaddingIsPrimarilyRetransmissions) {
       return SEND_PACKET;
     }
 
-    test::PacketTransport* CreateSendTransport(
-        test::DEPRECATED_SingleThreadedTaskQueueForTesting* task_queue,
+    std::unique_ptr<test::PacketTransport> CreateSendTransport(
+        TaskQueueBase* task_queue,
         Call* sender_call) override {
       const int kNetworkDelayMs = 50;
       BuiltInNetworkBehaviorConfig config;
       config.loss_percent = 10;
       config.link_capacity_kbps = kCapacityKbps;
       config.queue_delay_ms = kNetworkDelayMs;
-      return new test::PacketTransport(
+      return std::make_unique<test::PacketTransport>(
           task_queue, sender_call, this, test::PacketTransport::kSender,
           payload_type_map_,
           std::make_unique<FakeNetworkPipe>(

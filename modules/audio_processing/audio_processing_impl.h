@@ -120,9 +120,7 @@ class AudioProcessingImpl : public AudioProcessing {
   // created only once in a single-treaded manner
   // during APM creation).
   GainControl* gain_control() const override;
-  LevelEstimator* level_estimator() const override;
   NoiseSuppression* noise_suppression() const override;
-  VoiceDetection* voice_detection() const override;
 
   // TODO(peah): Remove MutateConfig once the new API allows that.
   void MutateConfig(rtc::FunctionView<void(AudioProcessing::Config*)> mutator);
@@ -182,12 +180,11 @@ class AudioProcessingImpl : public AudioProcessing {
                 bool gain_controller2_enabled,
                 bool pre_amplifier_enabled,
                 bool echo_controller_enabled,
-                bool voice_activity_detector_enabled,
-                bool private_voice_detector_enabled,
-                bool level_estimator_enabled,
+                bool voice_detector_enabled,
                 bool transient_suppressor_enabled);
     bool CaptureMultiBandSubModulesActive() const;
-    bool CaptureMultiBandProcessingActive() const;
+    bool CaptureMultiBandProcessingPresent() const;
+    bool CaptureMultiBandProcessingActive(bool ec_processing_active) const;
     bool CaptureFullBandProcessingActive() const;
     bool CaptureAnalyzerActive() const;
     bool RenderMultiBandSubModulesActive() const;
@@ -208,9 +205,7 @@ class AudioProcessingImpl : public AudioProcessing {
     bool gain_controller2_enabled_ = false;
     bool pre_amplifier_enabled_ = false;
     bool echo_controller_enabled_ = false;
-    bool level_estimator_enabled_ = false;
-    bool voice_activity_detector_enabled_ = false;
-    bool private_voice_detector_enabled_ = false;
+    bool voice_detector_enabled_ = false;
     bool transient_suppressor_enabled_ = false;
     bool first_update_ = true;
   };
@@ -239,6 +234,7 @@ class AudioProcessingImpl : public AudioProcessing {
   void InitializeResidualEchoDetector()
       RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_render_, crit_capture_);
   void InitializeHighPassFilter() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
+  void InitializeVoiceDetector() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
   void InitializeEchoController()
       RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_render_, crit_capture_);
   void InitializeGainController2() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
@@ -246,6 +242,10 @@ class AudioProcessingImpl : public AudioProcessing {
   void InitializePostProcessor() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
   void InitializeAnalyzer() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
   void InitializePreProcessor() RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_render_);
+
+  // Sample rate used for the fullband processing.
+  int proc_fullband_sample_rate_hz() const
+      RTC_EXCLUSIVE_LOCKS_REQUIRED(crit_capture_);
 
   // Empties and handles the respective RuntimeSetting queues.
   void HandleCaptureRuntimeSettings()
@@ -389,6 +389,7 @@ class AudioProcessingImpl : public AudioProcessing {
     bool key_pressed;
     bool transient_suppressor_enabled;
     std::unique_ptr<AudioBuffer> capture_audio;
+    std::unique_ptr<AudioBuffer> capture_fullband_audio;
     // Only the rate and samples fields of capture_processing_format_ are used
     // because the capture processing number of channels is mutable and is
     // tracked by the capture_audio_.
@@ -405,7 +406,6 @@ class AudioProcessingImpl : public AudioProcessing {
       size_t num_keyboard_frames = 0;
       const float* keyboard_data = nullptr;
     } keyboard_info;
-    AudioFrame::VADActivity vad_activity = AudioFrame::kVadUnknown;
   } capture_ RTC_GUARDED_BY(crit_capture_);
 
   struct ApmCaptureNonLockedState {

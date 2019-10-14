@@ -35,6 +35,8 @@ namespace webrtc {
 
 struct EmulatedIpPacket {
  public:
+  static constexpr int kUdpHeaderSize = 8;
+
   EmulatedIpPacket(const rtc::SocketAddress& from,
                    const rtc::SocketAddress& to,
                    rtc::CopyOnWriteBuffer data,
@@ -50,9 +52,14 @@ struct EmulatedIpPacket {
   size_t size() const { return data.size(); }
   const uint8_t* cdata() const { return data.cdata(); }
 
+  size_t ip_packet_size() const {
+    return size() + kUdpHeaderSize + ip_header_size;
+  }
   rtc::SocketAddress from;
   rtc::SocketAddress to;
+  // Holds the UDP payload.
   rtc::CopyOnWriteBuffer data;
+  int ip_header_size;
   Timestamp arrival_time;
 };
 
@@ -260,6 +267,8 @@ class FakePacketRoute : public EmulatedNetworkReceiverInterface {
         send_addr_(route_->from->GetPeerLocalAddress(), 0),
         recv_addr_(route_->to->GetPeerLocalAddress(),
                    *route_->to->BindReceiver(0, this)) {}
+
+  ~FakePacketRoute() { route_->to->UnbindReceiver(recv_addr_.port()); }
 
   void SendPacket(size_t size, FakePacketType packet) {
     RTC_CHECK_GE(size, sizeof(int));

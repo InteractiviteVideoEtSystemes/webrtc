@@ -193,12 +193,10 @@ void EnableAllAPComponents(AudioProcessing* ap) {
 
   apm_config.high_pass_filter.enabled = true;
   apm_config.level_estimation.enabled = true;
+  apm_config.voice_detection.enabled = true;
   ap->ApplyConfig(apm_config);
 
-  EXPECT_NOERR(ap->level_estimator()->Enable(true));
   EXPECT_NOERR(ap->noise_suppression()->Enable(true));
-
-  EXPECT_NOERR(ap->voice_detection()->Enable(true));
 }
 
 // These functions are only used by ApmTest.Process.
@@ -1049,128 +1047,6 @@ TEST_F(ApmTest, HighPassFilter) {
   apm_->ApplyConfig(apm_config);
 }
 
-TEST_F(ApmTest, LevelEstimator) {
-  // Turn level estimator on/off
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(false));
-  EXPECT_FALSE(apm_->level_estimator()->is_enabled());
-
-  EXPECT_EQ(apm_->kNotEnabledError, apm_->level_estimator()->RMS());
-
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(true));
-  EXPECT_TRUE(apm_->level_estimator()->is_enabled());
-
-  // Run this test in wideband; in super-wb, the splitting filter distorts the
-  // audio enough to cause deviation from the expectation for small values.
-  frame_->samples_per_channel_ = 160;
-  frame_->num_channels_ = 2;
-  frame_->sample_rate_hz_ = 16000;
-
-  // Min value if no frames have been processed.
-  EXPECT_EQ(127, apm_->level_estimator()->RMS());
-
-  // Min value on zero frames.
-  SetFrameTo(frame_, 0);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(127, apm_->level_estimator()->RMS());
-
-  // Try a few RMS values.
-  // (These also test that the value resets after retrieving it.)
-  SetFrameTo(frame_, 32767);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(0, apm_->level_estimator()->RMS());
-
-  SetFrameTo(frame_, 30000);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(1, apm_->level_estimator()->RMS());
-
-  SetFrameTo(frame_, 10000);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(10, apm_->level_estimator()->RMS());
-
-  SetFrameTo(frame_, 10);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(70, apm_->level_estimator()->RMS());
-
-  // Verify reset after enable/disable.
-  SetFrameTo(frame_, 32767);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(false));
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(true));
-  SetFrameTo(frame_, 1);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(90, apm_->level_estimator()->RMS());
-
-  // Verify reset after initialize.
-  SetFrameTo(frame_, 32767);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->Initialize());
-  SetFrameTo(frame_, 1);
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(90, apm_->level_estimator()->RMS());
-}
-
-TEST_F(ApmTest, VoiceDetection) {
-  // Test external VAD
-  EXPECT_EQ(apm_->kNoError,
-            apm_->voice_detection()->set_stream_has_voice(true));
-  EXPECT_TRUE(apm_->voice_detection()->stream_has_voice());
-  EXPECT_EQ(apm_->kNoError,
-            apm_->voice_detection()->set_stream_has_voice(false));
-  EXPECT_FALSE(apm_->voice_detection()->stream_has_voice());
-
-  // Test valid likelihoods
-  VoiceDetection::Likelihood likelihood[] = {
-      VoiceDetection::kVeryLowLikelihood, VoiceDetection::kLowLikelihood,
-      VoiceDetection::kModerateLikelihood, VoiceDetection::kHighLikelihood};
-  for (size_t i = 0; i < arraysize(likelihood); i++) {
-    EXPECT_EQ(apm_->kNoError,
-              apm_->voice_detection()->set_likelihood(likelihood[i]));
-    EXPECT_EQ(likelihood[i], apm_->voice_detection()->likelihood());
-  }
-
-  /* TODO(bjornv): Enable once VAD supports other frame lengths than 10 ms
-  // Test invalid frame sizes
-  EXPECT_EQ(apm_->kBadParameterError,
-      apm_->voice_detection()->set_frame_size_ms(12));
-
-  // Test valid frame sizes
-  for (int i = 10; i <= 30; i += 10) {
-    EXPECT_EQ(apm_->kNoError,
-        apm_->voice_detection()->set_frame_size_ms(i));
-    EXPECT_EQ(i, apm_->voice_detection()->frame_size_ms());
-  }
-  */
-
-  // Turn VAD on/off
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(true));
-  EXPECT_TRUE(apm_->voice_detection()->is_enabled());
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(false));
-  EXPECT_FALSE(apm_->voice_detection()->is_enabled());
-
-  // Test that AudioFrame activity is maintained when VAD is disabled.
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(false));
-  AudioFrame::VADActivity activity[] = {
-      AudioFrame::kVadActive, AudioFrame::kVadPassive, AudioFrame::kVadUnknown};
-  for (size_t i = 0; i < arraysize(activity); i++) {
-    frame_->vad_activity_ = activity[i];
-    EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-    EXPECT_EQ(activity[i], frame_->vad_activity_);
-  }
-
-  // Test that AudioFrame activity is set when VAD is enabled.
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(true));
-  frame_->vad_activity_ = AudioFrame::kVadUnknown;
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_NE(AudioFrame::kVadUnknown, frame_->vad_activity_);
-
-  // TODO(bjornv): Add tests for streamed voice; stream_has_voice()
-}
-
 TEST_F(ApmTest, AllProcessingDisabledByDefault) {
   AudioProcessing::Config config = apm_->GetConfig();
   EXPECT_FALSE(config.echo_canceller.enabled);
@@ -1178,9 +1054,7 @@ TEST_F(ApmTest, AllProcessingDisabledByDefault) {
   EXPECT_FALSE(config.level_estimation.enabled);
   EXPECT_FALSE(config.voice_detection.enabled);
   EXPECT_FALSE(apm_->gain_control()->is_enabled());
-  EXPECT_FALSE(apm_->level_estimator()->is_enabled());
   EXPECT_FALSE(apm_->noise_suppression()->is_enabled());
-  EXPECT_FALSE(apm_->voice_detection()->is_enabled());
 }
 
 TEST_F(ApmTest, NoProcessingWhenAllComponentsDisabled) {
@@ -1274,27 +1148,20 @@ TEST_F(ApmTest, SplittingFilter) {
   EXPECT_TRUE(FrameDataAreEqual(*frame_, frame_copy));
 
   // 2. Only the level estimator is enabled...
-  SetFrameTo(frame_, 1000);
-  frame_copy.CopyFrom(*frame_);
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(true));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_TRUE(FrameDataAreEqual(*frame_, frame_copy));
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(false));
-
-  // 3. Only VAD is enabled...
-  SetFrameTo(frame_, 1000);
-  frame_copy.CopyFrom(*frame_);
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(true));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
-  EXPECT_TRUE(FrameDataAreEqual(*frame_, frame_copy));
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(false));
-
-  // 4. Only GetStatistics-reporting VAD is enabled...
-  SetFrameTo(frame_, 1000);
-  frame_copy.CopyFrom(*frame_);
   auto apm_config = apm_->GetConfig();
+  SetFrameTo(frame_, 1000);
+  frame_copy.CopyFrom(*frame_);
+  apm_config.level_estimation.enabled = true;
+  apm_->ApplyConfig(apm_config);
+  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
+  EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
+  EXPECT_TRUE(FrameDataAreEqual(*frame_, frame_copy));
+  apm_config.level_estimation.enabled = false;
+  apm_->ApplyConfig(apm_config);
+
+  // 3. Only GetStatistics-reporting VAD is enabled...
+  SetFrameTo(frame_, 1000);
+  frame_copy.CopyFrom(*frame_);
   apm_config.voice_detection.enabled = true;
   apm_->ApplyConfig(apm_config);
   EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
@@ -1303,19 +1170,17 @@ TEST_F(ApmTest, SplittingFilter) {
   apm_config.voice_detection.enabled = false;
   apm_->ApplyConfig(apm_config);
 
-  // 5. Both VADs and the level estimator are enabled...
+  // 4. Both the VAD and the level estimator are enabled...
   SetFrameTo(frame_, 1000);
   frame_copy.CopyFrom(*frame_);
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(true));
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(true));
   apm_config.voice_detection.enabled = true;
+  apm_config.level_estimation.enabled = true;
   apm_->ApplyConfig(apm_config);
   EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
   EXPECT_EQ(apm_->kNoError, apm_->ProcessStream(frame_));
   EXPECT_TRUE(FrameDataAreEqual(*frame_, frame_copy));
-  EXPECT_EQ(apm_->kNoError, apm_->level_estimator()->Enable(false));
-  EXPECT_EQ(apm_->kNoError, apm_->voice_detection()->Enable(false));
   apm_config.voice_detection.enabled = false;
+  apm_config.level_estimation.enabled = false;
   apm_->ApplyConfig(apm_config);
 
   // Check the test is valid. We should have distortion from the filter
@@ -1652,17 +1517,14 @@ TEST_F(ApmTest, Process) {
       if (apm_->gain_control()->stream_is_saturated()) {
         is_saturated_count++;
       }
-      if (apm_->voice_detection()->stream_has_voice()) {
-        has_voice_count++;
-        EXPECT_EQ(AudioFrame::kVadActive, frame_->vad_activity_);
-      } else {
-        EXPECT_EQ(AudioFrame::kVadPassive, frame_->vad_activity_);
-      }
-
-      ns_speech_prob_average += apm_->noise_suppression()->speech_probability();
       AudioProcessingStats stats =
           apm_->GetStatistics(/*has_remote_tracks=*/false);
+      EXPECT_TRUE(stats.voice_detected);
+      EXPECT_TRUE(stats.output_rms_dbfs);
+      has_voice_count += *stats.voice_detected ? 1 : 0;
       rms_dbfs_average += *stats.output_rms_dbfs;
+
+      ns_speech_prob_average += apm_->noise_suppression()->speech_probability();
 
       size_t frame_size = frame_->samples_per_channel_ * frame_->num_channels_;
       size_t write_count =
@@ -2564,9 +2426,7 @@ std::unique_ptr<AudioProcessing> CreateApm(bool mobile_aec) {
   apm_config.echo_canceller.mobile_mode = mobile_aec;
   apm->ApplyConfig(apm_config);
   EXPECT_EQ(apm->gain_control()->Enable(false), 0);
-  EXPECT_EQ(apm->level_estimator()->Enable(false), 0);
   EXPECT_EQ(apm->noise_suppression()->Enable(false), 0);
-  EXPECT_EQ(apm->voice_detection()->Enable(false), 0);
   return apm;
 }
 

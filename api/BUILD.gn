@@ -36,7 +36,7 @@ rtc_source_set("callfactory_api") {
 }
 
 if (!build_with_chromium) {
-  rtc_static_library("create_peerconnection_factory") {
+  rtc_source_set("create_peerconnection_factory") {
     visibility = [ "*" ]
     allow_poison = [ "default_task_queue" ]
     sources = [
@@ -123,12 +123,9 @@ rtc_static_library("libjingle_peerconnection_api") {
   sources = [
     "candidate.cc",
     "candidate.h",
-    "congestion_control_interface.h",
     "crypto_params.h",
     "data_channel_interface.cc",
     "data_channel_interface.h",
-    "data_channel_transport_interface.h",
-    "datagram_transport_interface.h",
     "dtls_transport_interface.cc",
     "dtls_transport_interface.h",
     "dtmf_sender_interface.h",
@@ -140,8 +137,6 @@ rtc_static_library("libjingle_peerconnection_api") {
     "jsep_session_description.h",
     "media_stream_proxy.h",
     "media_stream_track_proxy.h",
-    "media_transport_config.h",
-    "media_transport_interface.h",
     "peer_connection_factory_proxy.h",
     "peer_connection_interface.cc",
     "peer_connection_interface.h",
@@ -186,6 +181,7 @@ rtc_static_library("libjingle_peerconnection_api") {
     "task_queue",
     "transport:bitrate_settings",
     "transport:datagram_transport_interface",
+    "transport:enums",
     "transport:network_control",
     "transport/media:audio_interfaces",
     "transport/media:media_transport_interface",

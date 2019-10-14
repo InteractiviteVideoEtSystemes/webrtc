@@ -52,6 +52,7 @@
 #include "media/engine/simulcast.h"
 #include "media/engine/webrtc_voice_engine.h"
 #include "rtc_base/arraysize.h"
+#include "rtc_base/experiments/min_video_bitrate_experiment.h"
 #include "rtc_base/fake_clock.h"
 #include "rtc_base/gunit.h"
 #include "rtc_base/numerics/safe_conversions.h"
@@ -1598,8 +1599,6 @@ TEST_F(WebRtcVideoChannelBaseTest, InvalidRecvBufferSize) {
 
 // Test that stats work properly for a 1-1 call.
 TEST_F(WebRtcVideoChannelBaseTest, GetStats) {
-  webrtc::test::ScopedFieldTrials field_trials(
-      "WebRTC-UseStandardBytesStats/Enabled/");
   SetUp();
 
   const int kDurationSec = 3;
@@ -1612,7 +1611,7 @@ TEST_F(WebRtcVideoChannelBaseTest, GetStats) {
   ASSERT_EQ(1U, info.senders.size());
   // TODO(whyuan): bytes_sent and bytes_rcvd are different. Are both payload?
   // For webrtc, bytes_sent does not include the RTP header length.
-  EXPECT_EQ(info.senders[0].bytes_sent,
+  EXPECT_EQ(info.senders[0].payload_bytes_sent,
             NumRtpBytes() - kRtpHeaderSize * NumRtpPackets());
   EXPECT_EQ(NumRtpPackets(), info.senders[0].packets_sent);
   EXPECT_EQ(0.0, info.senders[0].fraction_lost);
@@ -1637,7 +1636,7 @@ TEST_F(WebRtcVideoChannelBaseTest, GetStats) {
   ASSERT_TRUE(info.receivers[0].codec_payload_type);
   EXPECT_EQ(DefaultCodec().id, *info.receivers[0].codec_payload_type);
   EXPECT_EQ(NumRtpBytes() - kRtpHeaderSize * NumRtpPackets(),
-            info.receivers[0].bytes_rcvd);
+            info.receivers[0].payload_bytes_rcvd);
   EXPECT_EQ(NumRtpPackets(), info.receivers[0].packets_rcvd);
   EXPECT_EQ(0, info.receivers[0].packets_lost);
   // TODO(asapersson): Not set for webrtc. Handle missing stats.
@@ -1658,8 +1657,6 @@ TEST_F(WebRtcVideoChannelBaseTest, GetStats) {
 
 // Test that stats work properly for a conf call with multiple recv streams.
 TEST_F(WebRtcVideoChannelBaseTest, GetStatsMultipleRecvStreams) {
-  webrtc::test::ScopedFieldTrials field_trials(
-      "WebRTC-UseStandardBytesStats/Enabled/");
   SetUp();
 
   cricket::FakeVideoRenderer renderer1, renderer2;
@@ -1693,7 +1690,7 @@ TEST_F(WebRtcVideoChannelBaseTest, GetStatsMultipleRecvStreams) {
   // TODO(whyuan): bytes_sent and bytes_rcvd are different. Are both payload?
   // For webrtc, bytes_sent does not include the RTP header length.
   EXPECT_EQ_WAIT(NumRtpBytes() - kRtpHeaderSize * NumRtpPackets(),
-                 GetSenderStats(0).bytes_sent, kTimeout);
+                 GetSenderStats(0).payload_bytes_sent, kTimeout);
   EXPECT_EQ_WAIT(NumRtpPackets(), GetSenderStats(0).packets_sent, kTimeout);
   EXPECT_EQ(kVideoWidth, GetSenderStats(0).send_frame_width);
   EXPECT_EQ(kVideoHeight, GetSenderStats(0).send_frame_height);
@@ -1703,7 +1700,7 @@ TEST_F(WebRtcVideoChannelBaseTest, GetStatsMultipleRecvStreams) {
     EXPECT_EQ(1U, GetReceiverStats(i).ssrcs().size());
     EXPECT_EQ(i + 1, GetReceiverStats(i).ssrcs()[0]);
     EXPECT_EQ_WAIT(NumRtpBytes() - kRtpHeaderSize * NumRtpPackets(),
-                   GetReceiverStats(i).bytes_rcvd, kTimeout);
+                   GetReceiverStats(i).payload_bytes_rcvd, kTimeout);
     EXPECT_EQ_WAIT(NumRtpPackets(), GetReceiverStats(i).packets_rcvd, kTimeout);
     EXPECT_EQ_WAIT(kVideoWidth, GetReceiverStats(i).frame_width, kTimeout);
     EXPECT_EQ_WAIT(kVideoHeight, GetReceiverStats(i).frame_height, kTimeout);
@@ -3450,7 +3447,7 @@ TEST_P(Vp9SettingsTestWithFieldTrial, VerifyCodecSettings) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    All,
     Vp9SettingsTestWithFieldTrial,
     ::testing::Values(
         std::make_tuple("", 1, 1, webrtc::InterLayerPredMode::kOnKeyPic),
@@ -3489,7 +3486,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(WebRtcVideoChannelTest, VerifyMinBitrate) {
   std::vector<webrtc::VideoStream> streams = AddSendStream()->GetVideoStreams();
   ASSERT_EQ(1u, streams.size());
-  EXPECT_EQ(cricket::kMinVideoBitrateBps, streams[0].min_bitrate_bps);
+  EXPECT_EQ(webrtc::kDefaultMinVideoBitrateBps, streams[0].min_bitrate_bps);
 }
 
 TEST_F(WebRtcVideoChannelTest, VerifyMinBitrateWithForcedFallbackFieldTrial) {
@@ -5281,9 +5278,6 @@ TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesDecodeStatsCorrectly) {
 }
 
 TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesReceivePacketStatsCorrectly) {
-  webrtc::test::ScopedFieldTrials field_trials(
-      "WebRTC-UseStandardBytesStats/Enabled/");
-
   FakeVideoReceiveStream* stream = AddRecvStream();
   webrtc::VideoReceiveStream::Stats stats;
   stats.rtp_stats.packet_counter.payload_bytes = 2;
@@ -5296,7 +5290,7 @@ TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesReceivePacketStatsCorrectly) {
   cricket::VideoMediaInfo info;
   ASSERT_TRUE(channel_->GetStats(&info));
   EXPECT_EQ(stats.rtp_stats.packet_counter.payload_bytes,
-            rtc::checked_cast<size_t>(info.receivers[0].bytes_rcvd));
+            rtc::checked_cast<size_t>(info.receivers[0].payload_bytes_rcvd));
   EXPECT_EQ(stats.rtp_stats.packet_counter.packets,
             rtc::checked_cast<unsigned int>(info.receivers[0].packets_rcvd));
   EXPECT_EQ(stats.rtp_stats.packets_lost, info.receivers[0].packets_lost);
@@ -5533,9 +5527,9 @@ TEST_F(WebRtcVideoChannelTest, RecvUnsignaledSsrcWithSignaledStreamId) {
   EXPECT_EQ(kSyncLabel,
             fake_call_->GetVideoReceiveStreams()[0]->GetConfig().sync_group);
 
-  // Removing the unsignaled stream should clear the cache. This time when
+  // Reset the unsignaled stream to clear the cache. This time when
   // a default video receive stream is created it won't have a sync_group.
-  ASSERT_TRUE(channel_->RemoveRecvStream(0));
+  channel_->ResetUnsignaledRecvStream();
   ASSERT_TRUE(channel_->RemoveRecvStream(kIncomingUnsignalledSsrc));
   EXPECT_EQ(0u, fake_call_->GetVideoReceiveStreams().size());
 
@@ -5862,12 +5856,13 @@ TEST_F(WebRtcVideoChannelTest,
   // we are just testing the behavior of
   // EncoderStreamFactory::CreateEncoderStreams.
   ASSERT_EQ(1UL, stream->GetVideoStreams().size());
-  EXPECT_EQ(kMinVideoBitrateBps, stream->GetVideoStreams()[0].min_bitrate_bps);
+  EXPECT_EQ(webrtc::kDefaultMinVideoBitrateBps,
+            stream->GetVideoStreams()[0].min_bitrate_bps);
 
   // Set a low max bitrate & check that VideoStream.min_bitrate_bps is limited
   // by this amount.
   parameters = channel_->GetRtpSendParameters(last_ssrc_);
-  int low_max_bitrate_bps = kMinVideoBitrateBps - 1000;
+  int low_max_bitrate_bps = webrtc::kDefaultMinVideoBitrateBps - 1000;
   parameters.encodings[0].max_bitrate_bps = low_max_bitrate_bps;
   EXPECT_TRUE(channel_->SetRtpSendParameters(last_ssrc_, parameters).ok());
 
@@ -5905,7 +5900,8 @@ TEST_F(WebRtcVideoChannelTest,
   ExpectSetMaxBitrate(send_parameters_.max_bandwidth_bps);
   ASSERT_TRUE(channel_->SetSendParameters(send_parameters_));
   ASSERT_EQ(1UL, stream->GetVideoStreams().size());
-  EXPECT_EQ(kMinVideoBitrateBps, stream->GetVideoStreams()[0].min_bitrate_bps);
+  EXPECT_EQ(webrtc::kDefaultMinVideoBitrateBps,
+            stream->GetVideoStreams()[0].min_bitrate_bps);
   EXPECT_EQ(send_parameters_.max_bandwidth_bps,
             stream->GetVideoStreams()[0].max_bitrate_bps);
 
@@ -7070,7 +7066,7 @@ TEST_F(WebRtcVideoChannelTest, DefaultMinAndMaxBitratePropagatedToEncoder) {
   // FakeVideoSendStream calls CreateEncoderStreams, test that the vector of
   // VideoStreams are created appropriately.
   EXPECT_EQ(1u, stream->GetVideoStreams().size());
-  EXPECT_EQ(cricket::kMinVideoBitrateBps,
+  EXPECT_EQ(webrtc::kDefaultMinVideoBitrateBps,
             stream->GetVideoStreams()[0].min_bitrate_bps);
   EXPECT_GT(stream->GetVideoStreams()[0].max_bitrate_bps,
             stream->GetVideoStreams()[0].min_bitrate_bps);
@@ -7565,7 +7561,7 @@ class WebRtcVideoChannelSimulcastTest : public ::testing::Test {
       stream.width = capture_width;
       stream.height = capture_height;
       stream.max_framerate = kDefaultVideoMaxFramerate;
-      stream.min_bitrate_bps = cricket::kMinVideoBitrateBps;
+      stream.min_bitrate_bps = webrtc::kDefaultMinVideoBitrateBps;
       stream.target_bitrate_bps = stream.max_bitrate_bps =
           GetMaxDefaultBitrateBps(capture_width, capture_height);
       stream.max_qp = kDefaultQpMax;

@@ -544,6 +544,8 @@ if (current_os == "linux" || is_android) {
       "src/jni/pc/audio.h",
       "src/jni/pc/logging.cc",
       "src/jni/pc/video.h",
+      "src/jni/scoped_java_ref_counted.cc",
+      "src/jni/scoped_java_ref_counted.h",
     ]
 
     deps = [
@@ -973,6 +975,7 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:criticalsection",
       "../../rtc_base:logging",
       "../../rtc_base:stringutils",
+      "//third_party/abseil-cpp/absl/base:core_headers",
     ]
   }
 
@@ -1199,6 +1202,7 @@ if (current_os == "linux" || is_android) {
     sources = [
       "api/org/webrtc/NetworkMonitor.java",
       "api/org/webrtc/NetworkMonitorAutoDetect.java",
+      "api/org/webrtc/RefCounted.java",
       "src/java/org/webrtc/Histogram.java",
       "src/java/org/webrtc/JniCommon.java",
     ]

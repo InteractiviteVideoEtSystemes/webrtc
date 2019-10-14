@@ -120,6 +120,11 @@ class JsepTransportController : public sigslot::has_slots<> {
     // Use datagram transport's implementation of data channels instead of SCTP.
     bool use_datagram_transport_for_data_channels = false;
 
+    // Whether |use_datagram_transport_for_data_channels| applies to outgoing
+    // calls.  If true, |use_datagram_transport_for_data_channels| applies only
+    // to incoming calls.
+    bool use_datagram_transport_for_data_channels_receive_only = false;
+
     // Optional media transport factory (experimental). If provided it will be
     // used to create media_transport (as long as either
     // |use_media_transport_for_media| or
@@ -227,10 +232,16 @@ class JsepTransportController : public sigslot::has_slots<> {
   // media transport configuration on the jsep transport controller, as long as
   // you did not call 'GetMediaTransport' or 'MaybeCreateJsepTransport'. Once
   // Jsep transport is created, you can't change this setting.
-  void SetMediaTransportSettings(bool use_media_transport_for_media,
-                                 bool use_media_transport_for_data_channels,
-                                 bool use_datagram_transport,
-                                 bool use_datagram_transport_for_data_channels);
+  void SetMediaTransportSettings(
+      bool use_media_transport_for_media,
+      bool use_media_transport_for_data_channels,
+      bool use_datagram_transport,
+      bool use_datagram_transport_for_data_channels,
+      bool use_datagram_transport_for_data_channels_receive_only);
+
+  // TODO(elrello): For now the rollback only removes mid to transport mapping
+  // and deletes unused transport, but doesn't consider anything more complex.
+  void RollbackTransportForMid(const std::string& mid);
 
   // If media transport is present enabled and supported,
   // when this method is called, it creates a media transport and generates its
@@ -301,7 +312,9 @@ class JsepTransportController : public sigslot::has_slots<> {
       const cricket::ContentInfo& content_info,
       const cricket::TransportInfo& transport_info,
       const std::vector<int>& encrypted_extension_ids,
-      int rtp_abs_sendtime_extn_id);
+      int rtp_abs_sendtime_extn_id,
+      absl::optional<std::string> media_alt_protocol,
+      absl::optional<std::string> data_alt_protocol);
 
   absl::optional<std::string> bundled_mid() const {
     absl::optional<std::string> bundled_mid;
@@ -322,6 +335,12 @@ class JsepTransportController : public sigslot::has_slots<> {
       const cricket::SessionDescription* description);
   std::vector<int> GetEncryptedHeaderExtensionIds(
       const cricket::ContentInfo& content_info);
+
+  // Extracts the alt-protocol settings that apply to the bundle group.
+  RTCError GetAltProtocolsForBundle(
+      const cricket::SessionDescription* description,
+      absl::optional<std::string>* media_alt_protocol,
+      absl::optional<std::string>* data_alt_protocol);
 
   int GetRtpAbsSendTimeHeaderExtensionId(
       const cricket::ContentInfo& content_info);

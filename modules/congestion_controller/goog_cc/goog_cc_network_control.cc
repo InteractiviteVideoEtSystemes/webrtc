@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "api/units/time_delta.h"
+#include "logging/rtc_event_log/events/rtc_event_remote_estimate.h"
 #include "modules/congestion_controller/goog_cc/acknowledged_bitrate_estimator.h"
 #include "modules/congestion_controller/goog_cc/alr_detector.h"
 #include "modules/congestion_controller/goog_cc/probe_controller.h"
@@ -250,14 +251,10 @@ NetworkControlUpdate GoogCcNetworkController::OnSentPacket(
                                                 TimeDelta::Zero());
   }
   bandwidth_estimation_->OnSentPacket(sent_packet);
-  bool network_changed = false;
 
   if (congestion_window_pushback_controller_) {
     congestion_window_pushback_controller_->UpdateOutstandingData(
         sent_packet.data_in_flight.bytes());
-    network_changed = true;
-  }
-  if (network_changed) {
     NetworkControlUpdate update;
     MaybeTriggerOnNetworkChanged(&update, sent_packet.send_time);
     return update;
@@ -500,7 +497,15 @@ NetworkControlUpdate GoogCcNetworkController::OnTransportPacketsFeedback(
 
   if (network_estimator_) {
     network_estimator_->OnTransportPacketsFeedback(report);
+    auto prev_estimate = estimate_;
     estimate_ = network_estimator_->GetCurrentEstimate();
+    // TODO(srte): Make OnTransportPacketsFeedback signal wether the state
+    // changed to avoid the need for this check.
+    if (estimate_ && (!prev_estimate || estimate_->last_feed_time !=
+                                            prev_estimate->last_feed_time)) {
+      event_log_->Log(std::make_unique<RtcEventRemoteEstimate>(
+          estimate_->link_capacity_lower, estimate_->link_capacity_upper));
+    }
   }
 
   NetworkControlUpdate update;

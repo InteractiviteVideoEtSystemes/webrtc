@@ -121,7 +121,7 @@ class VideoStreamEncoder : public VideoStreamEncoderInterface,
     int pixel_count() const { return width * height; }
   };
 
-  struct EncoderRateSettings : public VideoEncoder::RateControlParameters {
+  struct EncoderRateSettings {
     EncoderRateSettings();
     EncoderRateSettings(const VideoBitrateAllocation& bitrate,
                         double framerate_fps,
@@ -131,6 +131,7 @@ class VideoStreamEncoder : public VideoStreamEncoderInterface,
     bool operator==(const EncoderRateSettings& rhs) const;
     bool operator!=(const EncoderRateSettings& rhs) const;
 
+    VideoEncoder::RateControlParameters rate_control;
     // This is the scalar target bitrate before the VideoBitrateAllocator, i.e.
     // the |target_bitrate| argument of the OnBitrateUpdated() method. This is
     // needed because the bitrate allocator may truncate the total bitrate and a
@@ -222,6 +223,8 @@ class VideoStreamEncoder : public VideoStreamEncoderInterface,
   void UpdateAdaptationStats(AdaptReason reason) RTC_RUN_ON(&encoder_queue_);
   VideoStreamEncoderObserver::AdaptationSteps GetActiveCounts(
       AdaptReason reason) RTC_RUN_ON(&encoder_queue_);
+  bool CanAdaptUpResolution(int pixels, uint32_t bitrate_bps) const
+      RTC_RUN_ON(&encoder_queue_);
   void RunPostEncode(EncodedImage encoded_image,
                      int64_t time_sent_us,
                      int temporal_index);

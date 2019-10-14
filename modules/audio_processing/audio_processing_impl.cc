@@ -34,13 +34,13 @@
 #include "modules/audio_processing/gain_controller2.h"
 #include "modules/audio_processing/high_pass_filter.h"
 #include "modules/audio_processing/include/audio_frame_view.h"
-#include "modules/audio_processing/level_estimator_impl.h"
+#include "modules/audio_processing/level_estimator.h"
 #include "modules/audio_processing/logging/apm_data_dumper.h"
 #include "modules/audio_processing/noise_suppression_impl.h"
 #include "modules/audio_processing/noise_suppression_proxy.h"
 #include "modules/audio_processing/residual_echo_detector.h"
 #include "modules/audio_processing/transient/transient_suppressor.h"
-#include "modules/audio_processing/voice_detection_impl.h"
+#include "modules/audio_processing/voice_detection.h"
 #include "rtc_base/atomic_ops.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/constructor_magic.h"
@@ -165,9 +165,7 @@ bool AudioProcessingImpl::ApmSubmoduleStates::Update(
     bool gain_controller2_enabled,
     bool pre_amplifier_enabled,
     bool echo_controller_enabled,
-    bool voice_activity_detector_enabled,
-    bool private_voice_detector_enabled,
-    bool level_estimator_enabled,
+    bool voice_detector_enabled,
     bool transient_suppressor_enabled) {
   bool changed = false;
   changed |= (high_pass_filter_enabled != high_pass_filter_enabled_);
@@ -182,11 +180,7 @@ bool AudioProcessingImpl::ApmSubmoduleStates::Update(
   changed |= (gain_controller2_enabled != gain_controller2_enabled_);
   changed |= (pre_amplifier_enabled_ != pre_amplifier_enabled);
   changed |= (echo_controller_enabled != echo_controller_enabled_);
-  changed |= (level_estimator_enabled != level_estimator_enabled_);
-  changed |=
-      (voice_activity_detector_enabled != voice_activity_detector_enabled_);
-  changed |=
-      (private_voice_detector_enabled != private_voice_detector_enabled_);
+  changed |= (voice_detector_enabled != voice_detector_enabled_);
   changed |= (transient_suppressor_enabled != transient_suppressor_enabled_);
   if (changed) {
     high_pass_filter_enabled_ = high_pass_filter_enabled;
@@ -198,9 +192,7 @@ bool AudioProcessingImpl::ApmSubmoduleStates::Update(
     gain_controller2_enabled_ = gain_controller2_enabled;
     pre_amplifier_enabled_ = pre_amplifier_enabled;
     echo_controller_enabled_ = echo_controller_enabled;
-    level_estimator_enabled_ = level_estimator_enabled;
-    voice_activity_detector_enabled_ = voice_activity_detector_enabled;
-    private_voice_detector_enabled_ = private_voice_detector_enabled;
+    voice_detector_enabled_ = voice_detector_enabled;
     transient_suppressor_enabled_ = transient_suppressor_enabled;
   }
 
@@ -211,15 +203,21 @@ bool AudioProcessingImpl::ApmSubmoduleStates::Update(
 
 bool AudioProcessingImpl::ApmSubmoduleStates::CaptureMultiBandSubModulesActive()
     const {
-  return CaptureMultiBandProcessingActive() ||
-         voice_activity_detector_enabled_ || private_voice_detector_enabled_;
+  return CaptureMultiBandProcessingPresent() || voice_detector_enabled_;
 }
 
-bool AudioProcessingImpl::ApmSubmoduleStates::CaptureMultiBandProcessingActive()
-    const {
+bool AudioProcessingImpl::ApmSubmoduleStates::
+    CaptureMultiBandProcessingPresent() const {
+  // If echo controller is present, assume it performs active processing.
+  return CaptureMultiBandProcessingActive(/*ec_processing_active=*/true);
+}
+
+bool AudioProcessingImpl::ApmSubmoduleStates::CaptureMultiBandProcessingActive(
+    bool ec_processing_active) const {
   return high_pass_filter_enabled_ || echo_canceller_enabled_ ||
          mobile_echo_controller_enabled_ || noise_suppressor_enabled_ ||
-         adaptive_gain_controller_enabled_ || echo_controller_enabled_;
+         adaptive_gain_controller_enabled_ ||
+         (echo_controller_enabled_ && ec_processing_active);
 }
 
 bool AudioProcessingImpl::ApmSubmoduleStates::CaptureFullBandProcessingActive()
@@ -260,10 +258,8 @@ struct AudioProcessingImpl::ApmPublicSubmodules {
   // Accessed externally of APM without any lock acquired.
   // TODO(bugs.webrtc.org/9947): Move these submodules into private_submodules_
   // when their pointer-to-submodule API functions are gone.
-  std::unique_ptr<LevelEstimatorImpl> level_estimator;
   std::unique_ptr<NoiseSuppressionImpl> noise_suppression;
   std::unique_ptr<NoiseSuppressionProxy> noise_suppression_proxy;
-  std::unique_ptr<VoiceDetectionImpl> voice_detection;
   std::unique_ptr<GainControlImpl> gain_control;
   std::unique_ptr<GainControlForExperimentalAgc>
       gain_control_for_experimental_agc;
@@ -294,8 +290,8 @@ struct AudioProcessingImpl::ApmPrivateSubmodules {
   std::unique_ptr<CustomProcessing> render_pre_processor;
   std::unique_ptr<GainApplier> pre_amplifier;
   std::unique_ptr<CustomAudioAnalyzer> capture_analyzer;
-  std::unique_ptr<LevelEstimatorImpl> output_level_estimator;
-  std::unique_ptr<VoiceDetectionImpl> voice_detector;
+  std::unique_ptr<LevelEstimator> output_level_estimator;
+  std::unique_ptr<VoiceDetection> voice_detector;
 };
 
 AudioProcessingBuilder::AudioProcessingBuilder() = default;
@@ -409,14 +405,10 @@ AudioProcessingImpl::AudioProcessingImpl(
       static_cast<bool>(echo_control_factory_);
 
   public_submodules_->gain_control.reset(new GainControlImpl());
-  public_submodules_->level_estimator.reset(
-      new LevelEstimatorImpl(&crit_capture_));
   public_submodules_->noise_suppression.reset(
       new NoiseSuppressionImpl(&crit_capture_));
   public_submodules_->noise_suppression_proxy.reset(new NoiseSuppressionProxy(
       this, public_submodules_->noise_suppression.get()));
-  public_submodules_->voice_detection.reset(
-      new VoiceDetectionImpl(&crit_capture_));
   public_submodules_->gain_control_for_experimental_agc.reset(
       new GainControlForExperimentalAgc(
           public_submodules_->gain_control.get()));
@@ -534,6 +526,20 @@ int AudioProcessingImpl::InitializeLocked() {
       formats_.api_format.output_stream().sample_rate_hz(),
       formats_.api_format.output_stream().num_channels()));
 
+  if (capture_nonlocked_.capture_processing_format.sample_rate_hz() <
+          formats_.api_format.output_stream().sample_rate_hz() &&
+      formats_.api_format.output_stream().sample_rate_hz() == 48000) {
+    capture_.capture_fullband_audio.reset(
+        new AudioBuffer(formats_.api_format.input_stream().sample_rate_hz(),
+                        formats_.api_format.input_stream().num_channels(),
+                        formats_.api_format.output_stream().sample_rate_hz(),
+                        formats_.api_format.output_stream().num_channels(),
+                        formats_.api_format.output_stream().sample_rate_hz(),
+                        formats_.api_format.output_stream().num_channels()));
+  } else {
+    capture_.capture_fullband_audio.reset();
+  }
+
   AllocateRenderQueue();
 
   public_submodules_->gain_control->Initialize(num_proc_channels(),
@@ -556,12 +562,7 @@ int AudioProcessingImpl::InitializeLocked() {
   InitializeHighPassFilter();
   public_submodules_->noise_suppression->Initialize(num_proc_channels(),
                                                     proc_sample_rate_hz());
-  public_submodules_->voice_detection->Initialize(proc_split_sample_rate_hz());
-  if (private_submodules_->voice_detector) {
-    private_submodules_->voice_detector->Initialize(
-        proc_split_sample_rate_hz());
-  }
-  public_submodules_->level_estimator->Initialize();
+  InitializeVoiceDetector();
   InitializeResidualEchoDetector();
   InitializeEchoController();
   InitializeGainController2();
@@ -702,6 +703,9 @@ void AudioProcessingImpl::ApplyConfig(const AudioProcessing::Config& config) {
       config_.gain_controller1.analog_level_maximum !=
           config.gain_controller1.analog_level_maximum;
 
+  const bool voice_detection_config_changed =
+      config_.voice_detection.enabled != config.voice_detection.enabled;
+
   config_ = config;
 
   if (aec_config_changed) {
@@ -740,19 +744,12 @@ void AudioProcessingImpl::ApplyConfig(const AudioProcessing::Config& config) {
 
   if (config_.level_estimation.enabled &&
       !private_submodules_->output_level_estimator) {
-    private_submodules_->output_level_estimator.reset(
-        new LevelEstimatorImpl(&crit_capture_));
-    private_submodules_->output_level_estimator->Enable(true);
+    private_submodules_->output_level_estimator =
+        std::make_unique<LevelEstimator>();
   }
 
-  if (config_.voice_detection.enabled && !private_submodules_->voice_detector) {
-    private_submodules_->voice_detector.reset(
-        new VoiceDetectionImpl(&crit_capture_));
-    private_submodules_->voice_detector->Enable(true);
-    private_submodules_->voice_detector->set_likelihood(
-        VoiceDetection::kVeryLowLikelihood);
-    private_submodules_->voice_detector->Initialize(
-        proc_split_sample_rate_hz());
+  if (voice_detection_config_changed) {
+    InitializeVoiceDetector();
   }
 
   // Reinitialization must happen after all submodule configuration to avoid
@@ -817,6 +814,12 @@ void AudioProcessingImpl::SetExtraOptions(const webrtc::Config& config) {
 int AudioProcessingImpl::proc_sample_rate_hz() const {
   // Used as callback from submodules, hence locking is not allowed.
   return capture_nonlocked_.capture_processing_format.sample_rate_hz();
+}
+
+int AudioProcessingImpl::proc_fullband_sample_rate_hz() const {
+  return capture_.capture_fullband_audio
+             ? capture_.capture_fullband_audio->num_frames() * 100
+             : capture_nonlocked_.capture_processing_format.sample_rate_hz();
 }
 
 int AudioProcessingImpl::proc_split_sample_rate_hz() const {
@@ -983,8 +986,17 @@ int AudioProcessingImpl::ProcessStream(const float* const* src,
 
   capture_.keyboard_info.Extract(src, formats_.api_format.input_stream());
   capture_.capture_audio->CopyFrom(src, formats_.api_format.input_stream());
+  if (capture_.capture_fullband_audio) {
+    capture_.capture_fullband_audio->CopyFrom(
+        src, formats_.api_format.input_stream());
+  }
   RETURN_ON_ERR(ProcessCaptureStreamLocked());
-  capture_.capture_audio->CopyTo(formats_.api_format.output_stream(), dest);
+  if (capture_.capture_fullband_audio) {
+    capture_.capture_fullband_audio->CopyTo(formats_.api_format.output_stream(),
+                                            dest);
+  } else {
+    capture_.capture_audio->CopyTo(formats_.api_format.output_stream(), dest);
+  }
 
   if (aec_dump_) {
     RecordProcessedCaptureStream(dest);
@@ -1276,14 +1288,24 @@ int AudioProcessingImpl::ProcessStream(AudioFrame* frame) {
     RecordUnprocessedCaptureStream(*frame);
   }
 
-  capture_.vad_activity = frame->vad_activity_;
   capture_.capture_audio->CopyFrom(frame);
-  RETURN_ON_ERR(ProcessCaptureStreamLocked());
-  if (submodule_states_.CaptureMultiBandProcessingActive() ||
-      submodule_states_.CaptureFullBandProcessingActive()) {
-    capture_.capture_audio->CopyTo(frame);
+  if (capture_.capture_fullband_audio) {
+    capture_.capture_fullband_audio->CopyFrom(frame);
   }
-  frame->vad_activity_ = capture_.vad_activity;
+  RETURN_ON_ERR(ProcessCaptureStreamLocked());
+  if (submodule_states_.CaptureMultiBandProcessingPresent() ||
+      submodule_states_.CaptureFullBandProcessingActive()) {
+    if (capture_.capture_fullband_audio) {
+      capture_.capture_fullband_audio->CopyTo(frame);
+    } else {
+      capture_.capture_audio->CopyTo(frame);
+    }
+  }
+  if (capture_.stats.voice_detected) {
+    frame->vad_activity_ = *capture_.stats.voice_detected
+                               ? AudioFrame::kVadActive
+                               : AudioFrame::kVadPassive;
+  }
 
   if (aec_dump_) {
     RecordProcessedCaptureStream(*frame);
@@ -1432,19 +1454,10 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
     public_submodules_->noise_suppression->ProcessCaptureAudio(capture_buffer);
   }
 
-  if (public_submodules_->voice_detection->is_enabled() &&
-      !public_submodules_->voice_detection->using_external_vad()) {
-    bool voice_active =
-        public_submodules_->voice_detection->ProcessCaptureAudio(
-            capture_buffer);
-    capture_.vad_activity =
-        voice_active ? AudioFrame::kVadActive : AudioFrame::kVadPassive;
-  }
-
   if (config_.voice_detection.enabled) {
-    private_submodules_->voice_detector->ProcessCaptureAudio(capture_buffer);
     capture_.stats.voice_detected =
-        private_submodules_->voice_detector->stream_has_voice();
+        private_submodules_->voice_detector->ProcessCaptureAudio(
+            capture_buffer);
   } else {
     capture_.stats.voice_detected = absl::nullopt;
   }
@@ -1462,10 +1475,21 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
       private_submodules_->echo_cancellation &&
           private_submodules_->echo_cancellation->stream_has_echo()));
 
-  if (submodule_states_.CaptureMultiBandProcessingActive() &&
+  if (submodule_states_.CaptureMultiBandProcessingPresent() &&
       SampleRateSupportsMultiBand(
           capture_nonlocked_.capture_processing_format.sample_rate_hz())) {
     capture_buffer->MergeFrequencyBands();
+  }
+
+  if (capture_.capture_fullband_audio) {
+    const auto& ec = private_submodules_->echo_controller;
+    bool ec_active = ec ? ec->ActiveProcessing() : false;
+    // Only update the fullband buffer if the multiband processing has changed
+    // the signal. Keep the original signal otherwise.
+    if (submodule_states_.CaptureMultiBandProcessingActive(ec_active)) {
+      capture_buffer->CopyTo(capture_.capture_fullband_audio.get());
+    }
+    capture_buffer = capture_.capture_fullband_audio.get();
   }
 
   if (config_.residual_echo_detector.enabled) {
@@ -1509,7 +1533,6 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
   }
 
   // The level estimator operates on the recombined data.
-  public_submodules_->level_estimator->ProcessStream(*capture_buffer);
   if (config_.level_estimation.enabled) {
     private_submodules_->output_level_estimator->ProcessStream(*capture_buffer);
     capture_.stats.output_rms_dbfs =
@@ -1809,16 +1832,8 @@ GainControl* AudioProcessingImpl::gain_control() const {
   return public_submodules_->gain_control_config_proxy.get();
 }
 
-LevelEstimator* AudioProcessingImpl::level_estimator() const {
-  return public_submodules_->level_estimator.get();
-}
-
 NoiseSuppression* AudioProcessingImpl::noise_suppression() const {
   return public_submodules_->noise_suppression_proxy.get();
-}
-
-VoiceDetection* AudioProcessingImpl::voice_detection() const {
-  return public_submodules_->voice_detection.get();
 }
 
 void AudioProcessingImpl::MutateConfig(
@@ -1845,9 +1860,7 @@ bool AudioProcessingImpl::UpdateActiveSubmoduleStates() {
       public_submodules_->gain_control->is_enabled(),
       config_.gain_controller2.enabled, config_.pre_amplifier.enabled,
       capture_nonlocked_.echo_controller_enabled,
-      public_submodules_->voice_detection->is_enabled(),
       config_.voice_detection.enabled,
-      public_submodules_->level_estimator->is_enabled(),
       capture_.transient_suppressor_enabled);
 }
 
@@ -1857,8 +1870,8 @@ void AudioProcessingImpl::InitializeTransient() {
       public_submodules_->transient_suppressor.reset(new TransientSuppressor());
     }
     public_submodules_->transient_suppressor->Initialize(
-        capture_nonlocked_.capture_processing_format.sample_rate_hz(),
-        capture_nonlocked_.split_rate, num_proc_channels());
+        proc_fullband_sample_rate_hz(), capture_nonlocked_.split_rate,
+        num_proc_channels());
   }
 }
 
@@ -1871,6 +1884,14 @@ void AudioProcessingImpl::InitializeHighPassFilter() {
   }
 }
 
+void AudioProcessingImpl::InitializeVoiceDetector() {
+  if (config_.voice_detection.enabled) {
+    private_submodules_->voice_detector = std::make_unique<VoiceDetection>(
+        proc_split_sample_rate_hz(), VoiceDetection::kVeryLowLikelihood);
+  } else {
+    private_submodules_->voice_detector.reset();
+  }
+}
 void AudioProcessingImpl::InitializeEchoController() {
   bool use_echo_controller =
       echo_control_factory_ ||
@@ -1975,7 +1996,8 @@ void AudioProcessingImpl::InitializeEchoController() {
 
 void AudioProcessingImpl::InitializeGainController2() {
   if (config_.gain_controller2.enabled) {
-    private_submodules_->gain_controller2->Initialize(proc_sample_rate_hz());
+    private_submodules_->gain_controller2->Initialize(
+        proc_fullband_sample_rate_hz());
   }
 }
 
@@ -1991,21 +2013,21 @@ void AudioProcessingImpl::InitializePreAmplifier() {
 void AudioProcessingImpl::InitializeResidualEchoDetector() {
   RTC_DCHECK(private_submodules_->echo_detector);
   private_submodules_->echo_detector->Initialize(
-      proc_sample_rate_hz(), 1,
+      proc_fullband_sample_rate_hz(), 1,
       formats_.render_processing_format.sample_rate_hz(), 1);
 }
 
 void AudioProcessingImpl::InitializeAnalyzer() {
   if (private_submodules_->capture_analyzer) {
-    private_submodules_->capture_analyzer->Initialize(proc_sample_rate_hz(),
-                                                      num_proc_channels());
+    private_submodules_->capture_analyzer->Initialize(
+        proc_fullband_sample_rate_hz(), num_proc_channels());
   }
 }
 
 void AudioProcessingImpl::InitializePostProcessor() {
   if (private_submodules_->capture_post_processor) {
     private_submodules_->capture_post_processor->Initialize(
-        proc_sample_rate_hz(), num_proc_channels());
+        proc_fullband_sample_rate_hz(), num_proc_channels());
   }
 }
 

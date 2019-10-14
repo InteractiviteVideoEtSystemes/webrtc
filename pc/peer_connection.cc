@@ -758,6 +758,7 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
     bool prioritize_most_likely_ice_candidate_pairs;
     struct cricket::MediaConfig media_config;
     bool prune_turn_ports;
+    PortPrunePolicy turn_port_prune_policy;
     bool presume_writable_when_fully_relayed;
     bool enable_ice_renomination;
     bool redetermine_role_on_ice_restart;
@@ -778,9 +779,11 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
     bool use_media_transport_for_data_channels;
     absl::optional<bool> use_datagram_transport;
     absl::optional<bool> use_datagram_transport_for_data_channels;
+    absl::optional<bool> use_datagram_transport_for_data_channels_receive_only;
     absl::optional<CryptoOptions> crypto_options;
     bool offer_extmap_allow_mixed;
     std::string turn_logging_id;
+    bool enable_implicit_rollback;
   };
   static_assert(sizeof(stuff_being_tested_for_equality) == sizeof(*this),
                 "Did you add something to RTCConfiguration and forget to "
@@ -815,6 +818,7 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
          enable_dtls_srtp == o.enable_dtls_srtp &&
          ice_candidate_pool_size == o.ice_candidate_pool_size &&
          prune_turn_ports == o.prune_turn_ports &&
+         turn_port_prune_policy == o.turn_port_prune_policy &&
          presume_writable_when_fully_relayed ==
              o.presume_writable_when_fully_relayed &&
          enable_ice_renomination == o.enable_ice_renomination &&
@@ -842,9 +846,12 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
          use_datagram_transport == o.use_datagram_transport &&
          use_datagram_transport_for_data_channels ==
              o.use_datagram_transport_for_data_channels &&
+         use_datagram_transport_for_data_channels_receive_only ==
+             o.use_datagram_transport_for_data_channels_receive_only &&
          crypto_options == o.crypto_options &&
          offer_extmap_allow_mixed == o.offer_extmap_allow_mixed &&
-         turn_logging_id == o.turn_logging_id;
+         turn_logging_id == o.turn_logging_id &&
+         enable_implicit_rollback == o.enable_implicit_rollback;
 }
 
 bool PeerConnectionInterface::RTCConfiguration::operator!=(
@@ -1080,6 +1087,9 @@ bool PeerConnection::Initialize(
       datagram_transport_data_channel_config_.enabled &&
       configuration.use_datagram_transport_for_data_channels.value_or(
           datagram_transport_data_channel_config_.default_value);
+  use_datagram_transport_for_data_channels_receive_only_ =
+      configuration.use_datagram_transport_for_data_channels_receive_only
+          .value_or(datagram_transport_data_channel_config_.receive_only);
   if (use_datagram_transport_ || use_datagram_transport_for_data_channels_ ||
       configuration.use_media_transport ||
       configuration.use_media_transport_for_data_channels) {
@@ -1114,6 +1124,8 @@ bool PeerConnection::Initialize(
     config.use_datagram_transport = use_datagram_transport_;
     config.use_datagram_transport_for_data_channels =
         use_datagram_transport_for_data_channels_;
+    config.use_datagram_transport_for_data_channels_receive_only =
+        use_datagram_transport_for_data_channels_receive_only_;
     config.media_transport_factory = factory_->media_transport_factory();
   }
 
@@ -2249,6 +2261,23 @@ void PeerConnection::SetLocalDescription(
     return;
   }
 
+  // For SLD we support only explicit rollback.
+  if (desc->GetType() == SdpType::kRollback) {
+    if (IsUnifiedPlan()) {
+      RTCError error = Rollback();
+      if (error.ok()) {
+        PostSetSessionDescriptionSuccess(observer);
+      } else {
+        PostSetSessionDescriptionFailure(observer, std::move(error));
+      }
+    } else {
+      PostSetSessionDescriptionFailure(
+          observer, RTCError(RTCErrorType::UNSUPPORTED_OPERATION,
+                             "Rollback not supported in Plan B"));
+    }
+    return;
+  }
+
   RTCError error = ValidateSessionDescription(desc.get(), cricket::CS_LOCAL);
   if (!error.ok()) {
     std::string error_message = GetSetDescriptionErrorMessage(
@@ -2621,7 +2650,24 @@ void PeerConnection::SetRemoteDescription(
         RTCError(RTCErrorType::INTERNAL_ERROR, std::move(error_message)));
     return;
   }
-
+  if (IsUnifiedPlan()) {
+    if (configuration_.enable_implicit_rollback) {
+      if (desc->GetType() == SdpType::kOffer &&
+          signaling_state() == kHaveLocalOffer) {
+        Rollback();
+      }
+    }
+    // Explicit rollback.
+    if (desc->GetType() == SdpType::kRollback) {
+      observer->OnSetRemoteDescriptionComplete(Rollback());
+      return;
+    }
+  } else if (desc->GetType() == SdpType::kRollback) {
+    observer->OnSetRemoteDescriptionComplete(
+        RTCError(RTCErrorType::UNSUPPORTED_OPERATION,
+                 "Rollback not supported in Plan B"));
+    return;
+  }
   if (desc->GetType() == SdpType::kOffer) {
     // Report to UMA the format of the received offer.
     ReportSdpFormatReceived(*desc);
@@ -3374,8 +3420,12 @@ PeerConnection::AssociateTransceiver(cricket::ContentSource source,
       transceiver = CreateAndAddTransceiver(sender, receiver);
       transceiver->internal()->set_direction(
           RtpTransceiverDirection::kRecvOnly);
+      if (type == SdpType::kOffer) {
+        transceiver_stable_states_by_transceivers_[transceiver] =
+            TransceiverStableState(RtpTransceiverDirection::kRecvOnly,
+                                   absl::nullopt, absl::nullopt, true);
+      }
     }
-
     // Check if the offer indicated simulcast but the answer rejected it.
     // This can happen when simulcast is not supported on the remote party.
     if (SimulcastIsRejected(old_local_content, *media_desc)) {
@@ -3408,6 +3458,20 @@ PeerConnection::AssociateTransceiver(cricket::ContentSource source,
       return std::move(error);
     }
   }
+  if (type == SdpType::kOffer) {
+    // Make sure we don't overwrite existing stable states and that the
+    // state is really going to change when adding new record to the map.
+    auto it = transceiver_stable_states_by_transceivers_.find(transceiver);
+    if (it == transceiver_stable_states_by_transceivers_.end() &&
+        (transceiver->internal()->mid() != content.name ||
+         transceiver->internal()->mline_index() != mline_index)) {
+      transceiver_stable_states_by_transceivers_[transceiver] =
+          TransceiverStableState(transceiver->internal()->direction(),
+                                 transceiver->internal()->mid(),
+                                 transceiver->internal()->mline_index(), false);
+    }
+  }
+
   // Associate the found or created RtpTransceiver with the m= section by
   // setting the value of the RtpTransceiver's mid property to the MID of the m=
   // section, and establish a mapping between the transceiver and the index of
@@ -3573,6 +3637,26 @@ RTCError PeerConnection::SetConfiguration(
         "after calling SetRemoteDescription.");
   }
 
+  if (local_description() &&
+      configuration.use_datagram_transport_for_data_channels_receive_only !=
+          configuration_
+              .use_datagram_transport_for_data_channels_receive_only) {
+    LOG_AND_RETURN_ERROR(
+        RTCErrorType::INVALID_MODIFICATION,
+        "Can't change use_datagram_transport_for_data_channels_receive_only "
+        "after calling SetLocalDescription.");
+  }
+
+  if (remote_description() &&
+      configuration.use_datagram_transport_for_data_channels_receive_only !=
+          configuration_
+              .use_datagram_transport_for_data_channels_receive_only) {
+    LOG_AND_RETURN_ERROR(
+        RTCErrorType::INVALID_MODIFICATION,
+        "Can't change use_datagram_transport_for_data_channels_receive_only "
+        "after calling SetRemoteDescription.");
+  }
+
   if (configuration.use_media_transport_for_data_channels ||
       configuration.use_media_transport ||
       (configuration.use_datagram_transport &&
@@ -3593,6 +3677,7 @@ RTCError PeerConnection::SetConfiguration(
   modified_config.ice_candidate_pool_size =
       configuration.ice_candidate_pool_size;
   modified_config.prune_turn_ports = configuration.prune_turn_ports;
+  modified_config.turn_port_prune_policy = configuration.turn_port_prune_policy;
   modified_config.surface_ice_candidates_on_ice_transport_type_changed =
       configuration.surface_ice_candidates_on_ice_transport_type_changed;
   modified_config.ice_check_min_interval = configuration.ice_check_min_interval;
@@ -3616,6 +3701,8 @@ RTCError PeerConnection::SetConfiguration(
   modified_config.use_datagram_transport = configuration.use_datagram_transport;
   modified_config.use_datagram_transport_for_data_channels =
       configuration.use_datagram_transport_for_data_channels;
+  modified_config.use_datagram_transport_for_data_channels_receive_only =
+      configuration.use_datagram_transport_for_data_channels_receive_only;
   modified_config.turn_logging_id = configuration.turn_logging_id;
   if (configuration != modified_config) {
     LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_MODIFICATION,
@@ -3662,7 +3749,7 @@ RTCError PeerConnection::SetConfiguration(
           rtc::Bind(&PeerConnection::ReconfigurePortAllocator_n, this,
                     stun_servers, turn_servers, modified_config.type,
                     modified_config.ice_candidate_pool_size,
-                    modified_config.prune_turn_ports,
+                    modified_config.GetTurnPortPrunePolicy(),
                     modified_config.turn_customizer,
                     modified_config.stun_candidate_keepalive_interval,
                     static_cast<bool>(local_description())))) {
@@ -3675,7 +3762,8 @@ RTCError PeerConnection::SetConfiguration(
   // triggers an ICE restart which will pick up the changes.
   if (modified_config.servers != configuration_.servers ||
       modified_config.type != configuration_.type ||
-      modified_config.prune_turn_ports != configuration_.prune_turn_ports) {
+      modified_config.GetTurnPortPrunePolicy() !=
+          configuration_.GetTurnPortPrunePolicy()) {
     transport_controller_->SetNeedsIceRestartFlag();
   }
 
@@ -3688,10 +3776,14 @@ RTCError PeerConnection::SetConfiguration(
       datagram_transport_data_channel_config_.enabled &&
       modified_config.use_datagram_transport_for_data_channels.value_or(
           datagram_transport_data_channel_config_.default_value);
+  use_datagram_transport_for_data_channels_receive_only_ =
+      modified_config.use_datagram_transport_for_data_channels_receive_only
+          .value_or(datagram_transport_data_channel_config_.receive_only);
   transport_controller_->SetMediaTransportSettings(
       modified_config.use_media_transport,
       modified_config.use_media_transport_for_data_channels,
-      use_datagram_transport_, use_datagram_transport_for_data_channels_);
+      use_datagram_transport_, use_datagram_transport_for_data_channels_,
+      use_datagram_transport_for_data_channels_receive_only_);
 
   if (configuration_.active_reset_srtp_params !=
       modified_config.active_reset_srtp_params) {
@@ -4467,8 +4559,19 @@ void PeerConnection::GetOptionsForOffer(
   // If datagram transport is in use, add opaque transport parameters.
   if (use_datagram_transport_ || use_datagram_transport_for_data_channels_) {
     for (auto& options : session_options->media_description_options) {
-      options.transport_options.opaque_parameters =
+      absl::optional<cricket::OpaqueTransportParameters> params =
           transport_controller_->GetTransportParameters(options.mid);
+      if (!params) {
+        continue;
+      }
+      options.transport_options.opaque_parameters = params;
+      if ((use_datagram_transport_ &&
+           (options.type == cricket::MEDIA_TYPE_AUDIO ||
+            options.type == cricket::MEDIA_TYPE_VIDEO)) ||
+          (use_datagram_transport_for_data_channels_ &&
+           options.type == cricket::MEDIA_TYPE_DATA)) {
+        options.alt_protocol = params->protocol;
+      }
     }
   }
 
@@ -4773,8 +4876,19 @@ void PeerConnection::GetOptionsForAnswer(
   // If datagram transport is in use, add opaque transport parameters.
   if (use_datagram_transport_ || use_datagram_transport_for_data_channels_) {
     for (auto& options : session_options->media_description_options) {
-      options.transport_options.opaque_parameters =
+      absl::optional<cricket::OpaqueTransportParameters> params =
           transport_controller_->GetTransportParameters(options.mid);
+      if (!params) {
+        continue;
+      }
+      options.transport_options.opaque_parameters = params;
+      if ((use_datagram_transport_ &&
+           (options.type == cricket::MEDIA_TYPE_AUDIO ||
+            options.type == cricket::MEDIA_TYPE_VIDEO)) ||
+          (use_datagram_transport_for_data_channels_ &&
+           options.type == cricket::MEDIA_TYPE_DATA)) {
+        options.alt_protocol = params->protocol;
+      }
     }
   }
 }
@@ -5626,8 +5740,8 @@ PeerConnection::InitializePortAllocator_n(
   // properties set above.
   port_allocator_->SetConfiguration(
       stun_servers, std::move(turn_servers_copy),
-      configuration.ice_candidate_pool_size, configuration.prune_turn_ports,
-      configuration.turn_customizer,
+      configuration.ice_candidate_pool_size,
+      configuration.GetTurnPortPrunePolicy(), configuration.turn_customizer,
       configuration.stun_candidate_keepalive_interval);
 
   InitializePortAllocatorResult res;
@@ -5640,7 +5754,7 @@ bool PeerConnection::ReconfigurePortAllocator_n(
     const std::vector<cricket::RelayServerConfig>& turn_servers,
     IceTransportsType type,
     int candidate_pool_size,
-    bool prune_turn_ports,
+    PortPrunePolicy turn_port_prune_policy,
     webrtc::TurnCustomizer* turn_customizer,
     absl::optional<int> stun_candidate_keepalive_interval,
     bool have_local_description) {
@@ -5661,7 +5775,8 @@ bool PeerConnection::ReconfigurePortAllocator_n(
   // candidate filter set above.
   return port_allocator_->SetConfiguration(
       stun_servers, std::move(turn_servers_copy), candidate_pool_size,
-      prune_turn_ports, turn_customizer, stun_candidate_keepalive_interval);
+      turn_port_prune_policy, turn_customizer,
+      stun_candidate_keepalive_interval);
 }
 
 cricket::ChannelManager* PeerConnection::channel_manager() const {
@@ -5781,6 +5896,7 @@ RTCError PeerConnection::UpdateSessionState(
   } else {
     RTC_DCHECK(type == SdpType::kAnswer);
     ChangeSignalingState(PeerConnectionInterface::kStable);
+    transceiver_stable_states_by_transceivers_.clear();
   }
 
   // Update internal objects according to the session description's media
@@ -7492,6 +7608,53 @@ bool PeerConnection::CheckIfNegotiationIsNeeded() {
   // If all the preceding checks were performed and true was not returned,
   // nothing remains to be negotiated; return false.
   return false;
+}
+
+RTCError PeerConnection::Rollback() {
+  auto state = signaling_state();
+  if (state != PeerConnectionInterface::kHaveLocalOffer &&
+      state != PeerConnectionInterface::kHaveRemoteOffer) {
+    return RTCError(RTCErrorType::INVALID_STATE,
+                    "Called in wrong signalingState: " +
+                        GetSignalingStateString(signaling_state()));
+  }
+  RTC_DCHECK_RUN_ON(signaling_thread());
+  RTC_DCHECK(IsUnifiedPlan());
+
+  for (auto&& transceivers_stable_state_pair :
+       transceiver_stable_states_by_transceivers_) {
+    auto transceiver = transceivers_stable_state_pair.first;
+    auto state = transceivers_stable_state_pair.second;
+    RTC_DCHECK(transceiver->internal()->mid().has_value());
+    std::string mid = transceiver->internal()->mid().value();
+    transport_controller_->RollbackTransportForMid(mid);
+    DestroyTransceiverChannel(transceiver);
+
+    if (state.newly_created()) {
+      // Remove added transceivers with no added track.
+      if (transceiver->internal()->sender()->track()) {
+        transceiver->internal()->set_created_by_addtrack(true);
+      } else {
+        int remaining_transceiver_count = 0;
+        for (auto&& t : transceivers_) {
+          if (t != transceiver) {
+            transceivers_[remaining_transceiver_count++] = t;
+          }
+        }
+        transceivers_.resize(remaining_transceiver_count);
+      }
+    }
+    transceiver->internal()->sender_internal()->set_transport(nullptr);
+    transceiver->internal()->receiver_internal()->set_transport(nullptr);
+    transceiver->internal()->set_direction(state.direction());
+    transceiver->internal()->set_mid(state.mid());
+    transceiver->internal()->set_mline_index(state.mline_index());
+  }
+  transceiver_stable_states_by_transceivers_.clear();
+  pending_local_description_.reset();
+  pending_remote_description_.reset();
+  ChangeSignalingState(PeerConnectionInterface::kStable);
+  return RTCError::OK();
 }
 
 }  // namespace webrtc

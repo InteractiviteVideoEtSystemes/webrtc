@@ -42,6 +42,14 @@ EchoCanceller3Config AdjustConfig(const EchoCanceller3Config& config) {
     adjusted_cfg.delay.delay_headroom_samples = kBlockSize * 2;
   }
 
+  if (field_trial::IsEnabled("WebRTC-Aec3ClampInstQualityToZeroKillSwitch")) {
+    adjusted_cfg.erle.clamp_quality_estimate_to_zero = false;
+  }
+
+  if (field_trial::IsEnabled("WebRTC-Aec3ClampInstQualityToOneKillSwitch")) {
+    adjusted_cfg.erle.clamp_quality_estimate_to_one = false;
+  }
+
   return adjusted_cfg;
 }
 
@@ -369,6 +377,10 @@ EchoControl::Metrics EchoCanceller3::GetMetrics() const {
 void EchoCanceller3::SetAudioBufferDelay(size_t delay_ms) {
   RTC_DCHECK_RUNS_SERIALIZED(&capture_race_checker_);
   block_processor_->SetAudioBufferDelay(delay_ms);
+}
+
+bool EchoCanceller3::ActiveProcessing() const {
+  return true;
 }
 
 void EchoCanceller3::EmptyRenderQueue() {
