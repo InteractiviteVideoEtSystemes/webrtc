@@ -163,6 +163,34 @@
     <ClCompile Include="aec\aec_core_sse2.cc" />
     <ClCompile Include="aec\aec_resampler.cc" />
     <ClCompile Include="aec\echo_cancellation.cc" />
+    <ClCompile Include="agc2\adaptive_agc.cc" />
+    <ClCompile Include="agc2\adaptive_digital_gain_applier.cc" />
+    <ClCompile Include="agc2\adaptive_mode_level_estimator.cc" />
+    <ClCompile Include="agc2\adaptive_mode_level_estimator_agc.cc" />
+    <ClCompile Include="agc2\agc2_common.cc" />
+    <ClCompile Include="agc2\agc2_testing_common.cc" />
+    <ClCompile Include="agc2\biquad_filter.cc" />
+    <ClCompile Include="agc2\compute_interpolated_gain_curve.cc" />
+    <ClCompile Include="agc2\down_sampler.cc" />
+    <ClCompile Include="agc2\fixed_digital_level_estimator.cc" />
+    <ClCompile Include="agc2\gain_applier.cc" />
+    <ClCompile Include="agc2\interpolated_gain_curve.cc" />
+    <ClCompile Include="agc2\limiter.cc" />
+    <ClCompile Include="agc2\limiter_db_gain_curve.cc" />
+    <ClCompile Include="agc2\noise_level_estimator.cc" />
+    <ClCompile Include="agc2\noise_spectrum_estimator.cc" />
+    <ClCompile Include="agc2\rnn_vad\auto_correlation.cc" />
+    <ClCompile Include="agc2\rnn_vad\features_extraction.cc" />
+    <ClCompile Include="agc2\rnn_vad\lp_residual.cc" />
+    <ClCompile Include="agc2\rnn_vad\pitch_search.cc" />
+    <ClCompile Include="agc2\rnn_vad\pitch_search_internal.cc" />
+    <ClCompile Include="agc2\rnn_vad\rnn.cc" />
+    <ClCompile Include="agc2\rnn_vad\spectral_features.cc" />
+    <ClCompile Include="agc2\rnn_vad\spectral_features_internal.cc" />
+    <ClCompile Include="agc2\saturation_protector.cc" />
+    <ClCompile Include="agc2\signal_classifier.cc" />
+    <ClCompile Include="agc2\vad_with_level.cc" />
+    <ClCompile Include="agc2\vector_float_frame.cc" />
     <ClCompile Include="agc\agc.cc" />
     <ClCompile Include="agc\agc_manager_direct.cc" />
     <ClCompile Include="agc\loudness_histogram.cc" />
@@ -186,6 +214,7 @@
     <ClCompile Include="utility\delay_estimator_wrapper.cc" />
     <ClCompile Include="utility\ooura_fft.cc" />
     <ClCompile Include="utility\ooura_fft_sse2.cc" />
+    <ClCompile Include="utility\pffft_wrapper.cc" />
     <ClCompile Include="vad\gmm.cc" />
     <ClCompile Include="vad\pitch_based_vad.cc" />
     <ClCompile Include="vad\pitch_internal.cc" />
@@ -201,6 +230,12 @@
     </ProjectReference>
     <ProjectReference Include="..\..\rtc_base\rtcbase.vcxproj">
       <Project>{48e00dc6-723d-42db-8cc4-a7b30433dd45}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\third_party\chromium_third_party.vcxproj">
+      <Project>{84bc7b64-4f63-4f6c-98ad-090e734c3489}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\webrtc-audio\abseil\abseil.vcxproj">
+      <Project>{2b005d97-ddea-42c7-b2a5-cef96a53d36c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\audio_coding\audio_coding.vcxproj">
       <Project>{d1f8794d-afb9-4707-becd-72fc1f320c92}</Project>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -103,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WEBRTC_WIN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;WEBRTC_WIN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\;..\abseil-cpp</AdditionalIncludeDirectories>
     </ClCompile>
@@ -151,38 +151,131 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="async_invoker.h" />
+    <ClInclude Include="async_packet_socket.h" />
+    <ClInclude Include="async_resolver_interface.h" />
+    <ClInclude Include="async_socket.h" />
+    <ClInclude Include="async_tcp_socket.h" />
+    <ClInclude Include="async_udp_socket.h" />
+    <ClInclude Include="atomic_ops.h" />
+    <ClInclude Include="bind.h" />
+    <ClInclude Include="bit_buffer.h" />
+    <ClInclude Include="byte_buffer.h" />
+    <ClInclude Include="byte_order.h" />
+    <ClInclude Include="callback.h" />
+    <ClInclude Include="checks.h" />
+    <ClInclude Include="cpu_time.h" />
+    <ClInclude Include="crc32.h" />
+    <ClInclude Include="crypt_string.h" />
+    <ClInclude Include="ip_address.h" />
+    <ClInclude Include="socket_adapters.h" />
+    <ClInclude Include="socket_address.h" />
+    <ClInclude Include="socket_address_pair.h" />
+    <ClInclude Include="socket_factory.h" />
+    <ClInclude Include="socket_stream.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strings\string_builder.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="win32.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\system_wrappers\source\clock.cc" />
     <ClCompile Include="..\system_wrappers\source\cpu_features.cc" />
     <ClCompile Include="..\system_wrappers\source\cpu_info.cc" />
-    <ClCompile Include="..\system_wrappers\source\event.cc" />
+    <ClCompile Include="..\system_wrappers\source\event_wrapper.cc" />
     <ClCompile Include="..\system_wrappers\source\field_trial.cc" />
     <ClCompile Include="..\system_wrappers\source\metrics.cc" />
     <ClCompile Include="..\system_wrappers\source\rtp_to_ntp_estimator.cc" />
     <ClCompile Include="..\system_wrappers\source\sleep.cc" />
+    <ClCompile Include="async_invoker.cc" />
+    <ClCompile Include="async_packet_socket.cc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WEBRTC_WIN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="async_resolver_interface.cc" />
+    <ClCompile Include="async_socket.cc" />
+    <ClCompile Include="async_tcp_socket.cc" />
+    <ClCompile Include="async_udp_socket.cc" />
     <ClCompile Include="bit_buffer.cc" />
     <ClCompile Include="buffer_queue.cc" />
     <ClCompile Include="byte_buffer.cc" />
     <ClCompile Include="checks.cc" />
+    <ClCompile Include="copy_on_write_buffer.cc" />
+    <ClCompile Include="cpu_time.cc" />
+    <ClCompile Include="crc32.cc" />
     <ClCompile Include="critical_section.cc" />
+    <ClCompile Include="crypt_string.cc" />
+    <ClCompile Include="data_rate_limiter.cc" />
+    <ClCompile Include="event.cc" />
+    <ClCompile Include="event_tracer.cc" />
+    <ClCompile Include="fake_clock.cc" />
+    <ClCompile Include="fake_ssl_identity.cc" />
+    <ClCompile Include="file_rotating_stream.cc" />
+    <ClCompile Include="firewall_socket_server.cc" />
+    <ClCompile Include="http_common.cc" />
+    <ClCompile Include="ip_address.cc" />
     <ClCompile Include="location.cc" />
     <ClCompile Include="logging.cc" />
+    <ClCompile Include="log_sinks.cc" />
+    <ClCompile Include="memory\aligned_malloc.cc" />
+    <ClCompile Include="memory_stream.cc" />
+    <ClCompile Include="memory_usage.cc" />
+    <ClCompile Include="message_handler.cc" />
+    <ClCompile Include="message_queue.cc" />
+    <ClCompile Include="nat_server.cc" />
+    <ClCompile Include="nat_socket_factory.cc" />
+    <ClCompile Include="nat_types.cc" />
+    <ClCompile Include="network.cc" />
+    <ClCompile Include="network_monitor.cc" />
+    <ClCompile Include="net_helper.cc" />
+    <ClCompile Include="net_helpers.cc" />
+    <ClCompile Include="null_socket_server.cc" />
+    <ClCompile Include="physical_socket_server.cc" />
+    <ClCompile Include="platform_thread.cc" />
+    <ClCompile Include="platform_thread_types.cc" />
+    <ClCompile Include="proxy_info.cc" />
+    <ClCompile Include="proxy_server.cc" />
+    <ClCompile Include="race_checker.cc" />
+    <ClCompile Include="random.cc" />
+    <ClCompile Include="rate_limiter.cc" />
+    <ClCompile Include="rate_statistics.cc" />
+    <ClCompile Include="rate_tracker.cc" />
+    <ClCompile Include="rtc_certificate.cc" />
+    <ClCompile Include="rtc_certificate_generator.cc" />
+    <ClCompile Include="server_socket_adapters.cc" />
+    <ClCompile Include="signal_thread.cc" />
+    <ClCompile Include="socket.cc" />
+    <ClCompile Include="socket_adapters.cc" />
+    <ClCompile Include="socket_address.cc" />
+    <ClCompile Include="socket_address_pair.cc" />
+    <ClCompile Include="socket_stream.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="stream.cc" />
     <ClCompile Include="strings\audio_format_to_string.cc" />
     <ClCompile Include="strings\string_builder.cc" />
+    <ClCompile Include="string_encode.cc" />
+    <ClCompile Include="string_to_number.cc" />
     <ClCompile Include="string_utils.cc" />
     <ClCompile Include="system\file_wrapper.cc" />
     <ClCompile Include="system\thread_registry.cc" />
+    <ClCompile Include="task_queue.cc" />
+    <ClCompile Include="task_queue_win.cc" />
+    <ClCompile Include="thread.cc" />
+    <ClCompile Include="timestamp_aligner.cc" />
     <ClCompile Include="time_utils.cc" />
+    <ClCompile Include="unique_id_generator.cc" />
+    <ClCompile Include="virtual_socket_server.cc" />
+    <ClCompile Include="weak_ptr.cc" />
+    <ClCompile Include="win32.cc" />
+    <ClCompile Include="win32_socket_server.cc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NOMINMAX;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WEBRTC_WIN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="win32_window.cc" />
+    <ClCompile Include="zero_memory.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

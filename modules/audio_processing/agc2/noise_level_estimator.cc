@@ -21,6 +21,11 @@
 #include "modules/audio_processing/logging/apm_data_dumper.h"
 #include "rtc_base/checks.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
 namespace webrtc {
 
 namespace {

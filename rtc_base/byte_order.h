@@ -39,8 +39,12 @@
 #elif defined(WEBRTC_WIN) || defined(__native_client__)
 
 #if defined(WEBRTC_WIN)
-#include <stdlib.h>
+// clang-format off
+// clang formating would change include order.
 #include <winsock2.h>
+#include <Windows.h>
+// clang-format on
+#include <stdlib.h>
 #else
 #include <netinet/in.h>
 #endif  // defined(WEBRTC_WIN)

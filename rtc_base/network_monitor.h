@@ -12,7 +12,7 @@
 #define RTC_BASE_NETWORK_MONITOR_H_
 
 #include "rtc_base/network_constants.h"
-#include "rtc_base/third_party/sigslot/sigslot.h"
+//#include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread.h"
 
 namespace rtc {

@@ -10,10 +10,19 @@
     <Filter Include="rnnoise\headers">
       <UniqueIdentifier>{9ddf9222-d78c-4140-a8e1-0d4313756394}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pffft">
+      <UniqueIdentifier>{3897233b-77a0-46f3-af3e-b2dd69315325}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rnnoise\src\rnn_vad_weights.cc">
       <Filter>rnnoise\src</Filter>
+    </ClCompile>
+    <ClCompile Include="pffft\src\fftpack.c">
+      <Filter>pffft</Filter>
+    </ClCompile>
+    <ClCompile Include="pffft\src\pffft.c">
+      <Filter>pffft</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

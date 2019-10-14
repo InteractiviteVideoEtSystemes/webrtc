@@ -16,10 +16,10 @@
 
 #include "rtc_base/checks.h"
 #include "rtc_base/constructor_magic.h"
-#include "rtc_base/event.h"
 #include "rtc_base/fake_clock.h"
 #include "rtc_base/message_queue.h"
 #include "rtc_base/socket_server.h"
+#include "rtc_base/event.h"
 
 namespace rtc {
 

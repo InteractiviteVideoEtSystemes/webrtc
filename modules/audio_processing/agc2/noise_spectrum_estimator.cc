@@ -19,6 +19,12 @@
 #include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 
+#ifdef min
+#undef min
+#undef max
+#endif
+
+
 namespace webrtc {
 namespace {
 constexpr float kMinNoisePower = 100.f;

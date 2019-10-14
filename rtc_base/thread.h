@@ -21,6 +21,9 @@
 #if defined(WEBRTC_POSIX)
 #include <pthread.h>
 #endif
+#if defined(WEBRTC_WIN)
+#include "rtc_base/win32.h"
+#endif
 #include "rtc_base/constructor_magic.h"
 #include "rtc_base/location.h"
 #include "rtc_base/message_handler.h"
@@ -28,10 +31,6 @@
 #include "rtc_base/platform_thread_types.h"
 #include "rtc_base/socket_server.h"
 #include "rtc_base/thread_annotations.h"
-
-#if defined(WEBRTC_WIN)
-#include "rtc_base/win32.h"
-#endif
 
 namespace rtc {
 

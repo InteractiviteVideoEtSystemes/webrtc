@@ -40,6 +40,8 @@ class ScopedRegisterThreadForDebugging {
 
 #if defined(WEBRTC_ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD)
 void PrintStackTracesOfRegisteredThreads();
+#elif defined(WEBRTC_WIN)
+void PrintStackTracesOfRegisteredThreads();
 #else
 inline void PrintStackTracesOfRegisteredThreads() {}
 #endif

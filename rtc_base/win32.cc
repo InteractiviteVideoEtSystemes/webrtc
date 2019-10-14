@@ -12,7 +12,7 @@
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
+#include <versionhelpers.h>
 #include <algorithm>
 
 #include "rtc_base/arraysize.h"
@@ -321,15 +321,59 @@ int inet_pton_v6(const char* src, void* dst) {
 bool GetOsVersion(int* major, int* minor, int* build) {
   OSVERSIONINFO info = {0};
   info.dwOSVersionInfoSize = sizeof(info);
-  if (GetVersionEx(&info)) {
+
+  if (IsWindows10OrGreater()) {
     if (major)
-      *major = info.dwMajorVersion;
+      *major = 10;
     if (minor)
-      *minor = info.dwMinorVersion;
+      *minor = 0;
     if (build)
-      *build = info.dwBuildNumber;
+      *build = 0;
     return true;
   }
+
+
+  if (IsWindows8Point1OrGreater()) {
+    if (major)
+      *major = 8;
+    if (minor)
+      *minor = 1;
+    if (build)
+      *build = 0;
+    return true;
+  }
+
+  if (IsWindows8OrGreater()) {
+    if (major)
+      *major = 8;
+    if (minor)
+      *minor = 0;
+    if (build)
+      *build = 0;
+    return true;
+  }
+
+  if (IsWindows7SP1OrGreater()) {
+    if (major)
+      *major = 7;
+    if (minor)
+      *minor = 1;
+    if (build)
+      *build = 0;
+    return true;
+  }
+
+  if (IsWindows7OrGreater()) 
+  {
+    if (major)
+      *major = 7;
+    if (minor)
+      *minor = 0;
+    if (build)
+      *build = 0;
+    return true;
+  }
+
   return false;
 }
 

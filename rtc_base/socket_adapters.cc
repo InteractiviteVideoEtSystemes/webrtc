@@ -19,8 +19,8 @@
 #include <time.h>
 
 #if defined(WEBRTC_WIN)
-#include <windows.h>
-#include <winsock2.h>
+//#include <windows.h>
+//#include <winsock2.h>
 #include <ws2tcpip.h>
 
 #define SECURITY_WIN32

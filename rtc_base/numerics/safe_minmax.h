@@ -83,6 +83,11 @@
 #include "rtc_base/numerics/safe_compare.h"
 #include "rtc_base/type_traits.h"
 
+#ifdef max
+#undef min
+#undef max
+#endif
+
 namespace rtc {
 
 namespace safe_minmax_impl {

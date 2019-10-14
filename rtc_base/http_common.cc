@@ -11,9 +11,11 @@
 #include <time.h>
 
 #if defined(WEBRTC_WIN)
-#include <windows.h>
+// clang-format off
+// clang formating would change include order.
 #include <winsock2.h>
-#include <ws2tcpip.h>
+#include <Windows.h>
+// clang-format on
 
 #define SECURITY_WIN32
 #include <security.h>

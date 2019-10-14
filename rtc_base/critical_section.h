@@ -23,8 +23,8 @@
 // Include winsock2.h before including <windows.h> to maintain consistency with
 // win32.h. To include win32.h directly, it must be broken out into its own
 // build target.
-#include <winsock2.h>
-#include <windows.h>
+//#include <winsock2.h>
+//#include <windows.h>
 #include <sal.h>  // must come after windows headers.
 // clang-format on
 #endif  // defined(WEBRTC_WIN)

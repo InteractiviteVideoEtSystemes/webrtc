@@ -37,6 +37,12 @@
     <Filter Include="vad">
       <UniqueIdentifier>{2191b682-d4ad-4e5b-b833-f12c614c6f7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="agc\agc2">
+      <UniqueIdentifier>{ea1756bf-7668-494f-983d-206ef5c6cc00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="agc\agc2\rnn">
+      <UniqueIdentifier>{34380243-0429-4788-b3fe-9b90e4e2fbbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -151,6 +157,93 @@
     </ClCompile>
     <ClCompile Include="vad\pitch_internal.cc">
       <Filter>vad</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\adaptive_mode_level_estimator.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\adaptive_agc.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\adaptive_digital_gain_applier.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\adaptive_mode_level_estimator_agc.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\agc2_common.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\agc2_testing_common.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\biquad_filter.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\compute_interpolated_gain_curve.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\down_sampler.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\fixed_digital_level_estimator.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\gain_applier.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\interpolated_gain_curve.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\limiter.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\limiter_db_gain_curve.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\signal_classifier.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\vad_with_level.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\vector_float_frame.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\saturation_protector.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\noise_level_estimator.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\noise_spectrum_estimator.cc">
+      <Filter>agc\agc2</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\auto_correlation.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\features_extraction.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\lp_residual.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\pitch_search.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\pitch_search_internal.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\spectral_features.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\spectral_features_internal.cc">
+      <Filter>agc\agc2\rnn</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\pffft_wrapper.cc">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="agc2\rnn_vad\rnn.cc">
+      <Filter>agc\agc2\rnn</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

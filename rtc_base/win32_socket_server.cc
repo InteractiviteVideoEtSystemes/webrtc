@@ -10,7 +10,7 @@
 
 #include "rtc_base/win32_socket_server.h"
 
-#include <ws2tcpip.h>  // NOLINT
+//#include <ws2tcpip.h>  // NOLINT
 
 #include <algorithm>
 
