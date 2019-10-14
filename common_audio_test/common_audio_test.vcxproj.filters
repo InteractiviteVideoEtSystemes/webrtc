@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\common_audio\audio_converter_unittest.cc" />
+    <ClCompile Include="..\common_audio\audio_util_unittest.cc" />
+    <ClCompile Include="..\common_audio\fir_filter_unittest.cc" />
+    <ClCompile Include="..\common_audio\real_fourier_unittest.cc" />
+    <ClCompile Include="..\common_audio\ring_buffer_unittest.cc" />
+    <ClCompile Include="..\common_audio\smoothing_filter_unittest.cc" />
+    <ClCompile Include="..\common_audio\sparse_fir_filter_unittest.cc" />
+    <ClCompile Include="..\common_audio\wav_file_unittest.cc" />
+    <ClCompile Include="..\common_audio\wav_header_unittest.cc" />
+    <ClCompile Include="..\common_audio\window_generator_unittest.cc" />
+    <ClCompile Include="..\test\testsupport\copy_to_file_audio_capturer.cc">
+      <Filter>test_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\testsupport\file_utils.cc">
+      <Filter>test_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\testsupport\file_utils_override.cc">
+      <Filter>test_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\testsupport\perf_test.cc">
+      <Filter>test_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\scenario\performance_stats.cc">
+      <Filter>test_scenario</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="test_support">
+      <UniqueIdentifier>{03976ef4-1d7f-4ca3-a484-77616e3b0746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test_scenario">
+      <UniqueIdentifier>{a7fcfcfb-aed1-49c0-8871-1d3691dcf885}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
