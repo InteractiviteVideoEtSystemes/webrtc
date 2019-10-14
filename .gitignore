@@ -70,4 +70,12 @@
 /common_audio/x64/
 /modules/audio_processing/x64/
 /.vscode
+common_audio_test/Debug/
+common_audio_test/x64/
+webrtc-audio/.vs/
+webrtc-audio/abseil/x64/
+webrtc-audio/googletest/x64/
+webrtc-audio/out/
+webrtc-audio/packages/
+webrtc-audio/x64/
 !webrtc/*
