@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="base">
+      <UniqueIdentifier>{a2fc2ecd-3085-4bf3-94cd-973594983398}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\internal">
+      <UniqueIdentifier>{31d989bb-3014-45c2-adb9-de1c27b859ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{95751381-db2d-45f5-840e-22c01d014d5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings\internal">
+      <UniqueIdentifier>{51f4d6b5-dfc1-4f33-8908-c35ff49574e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="flags">
+      <UniqueIdentifier>{5095d4d5-960a-4825-a71b-0b9665bb8a84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="flags\internal">
+      <UniqueIdentifier>{ad901908-e41a-4bb2-84e8-2405c44fa529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization">
+      <UniqueIdentifier>{7339047d-2513-4e6f-a51c-077c72ddb98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{daae53f4-15a5-4bf2-a98d-1489f9ee0144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debugging">
+      <UniqueIdentifier>{b9e6aace-771c-4156-a3d8-193d381b4e95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debugging\internal">
+      <UniqueIdentifier>{8e7b325f-ae35-40ba-8bd3-99f7ff7b2895}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization\internal">
+      <UniqueIdentifier>{03243d96-45ee-4723-8833-6e18cf17ba4f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\dynamic_annotations.cc">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\log_severity.cc">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\cycleclock.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\low_level_alloc.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\raw_logging.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\scoped_set_env.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\spinlock.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\spinlock_wait.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\sysinfo.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\thread_identity.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\throw_delegate.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\unscaledcycleclock.cc">
+      <Filter>base\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\ascii.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\charconv.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\escaping.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\match.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\numbers.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_cat.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_replace.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_split.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\string_view.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\substitute.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\charconv_parse.cc">
+      <Filter>strings\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\memutil.cc">
+      <Filter>strings\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\ostringstream.cc">
+      <Filter>strings\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\pow10_helper.cc">
+      <Filter>strings\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\utf8.cc">
+      <Filter>strings\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\flag.cc">
+      <Filter>flags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\parse.cc">
+      <Filter>flags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\usage.cc">
+      <Filter>flags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\usage_config.cc">
+      <Filter>flags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\flag.cc">
+      <Filter>flags\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\registry.cc">
+      <Filter>flags\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\type_erased.cc">
+      <Filter>flags\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\usage.cc">
+      <Filter>flags\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\mutex.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\time\civil_time.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\time\clock.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\time\duration.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\time\format.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\time\time.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\failure_signal_handler.cc">
+      <Filter>debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\leak_check.cc">
+      <Filter>debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\stacktrace.cc">
+      <Filter>debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\symbolize.cc">
+      <Filter>debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\address_is_readable.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\demangle.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\elf_mem_image.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\examine_stack.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\stack_consumption.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\vdso_support.cc">
+      <Filter>debugging\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\barrier.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\blocking_counter.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\notification.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\create_thread_identity.cc">
+      <Filter>synchronization\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\graphcycles.cc">
+      <Filter>synchronization\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\per_thread_sem.cc">
+      <Filter>synchronization\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\waiter.cc">
+      <Filter>synchronization\internal</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

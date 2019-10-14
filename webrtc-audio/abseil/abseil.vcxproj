@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\dynamic_annotations.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\cycleclock.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\low_level_alloc.cc">
+      <UndefinePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">min</UndefinePreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\raw_logging.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\scoped_set_env.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\spinlock.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\spinlock_wait.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\sysinfo.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\thread_identity.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\throw_delegate.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\internal\unscaledcycleclock.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\base\log_severity.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\failure_signal_handler.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\address_is_readable.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\demangle.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\elf_mem_image.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\examine_stack.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\stack_consumption.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\internal\vdso_support.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\leak_check.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\stacktrace.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\debugging\symbolize.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\flag.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\flag.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\registry.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\type_erased.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\internal\usage.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\parse.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\usage.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\flags\usage_config.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\ascii.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\charconv.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\escaping.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\charconv_parse.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\memutil.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\ostringstream.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\pow10_helper.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\internal\utf8.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\match.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\numbers.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\string_view.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_cat.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_replace.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\str_split.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\strings\substitute.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\barrier.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\blocking_counter.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\create_thread_identity.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\graphcycles.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\per_thread_sem.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\internal\waiter.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\mutex.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\synchronization\notification.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\time\civil_time.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\time\clock.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\time\duration.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\time\format.cc" />
+    <ClCompile Include="..\..\abseil-cpp\absl\time\time.cc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{2B005D97-DDEA-42C7-B2A5-CEF96A53D36C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>abseil</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX ;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\abseil-cpp</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\abseil-cpp</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
