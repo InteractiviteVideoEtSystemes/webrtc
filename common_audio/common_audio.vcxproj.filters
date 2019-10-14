@@ -154,6 +154,9 @@
     <ClCompile Include="resampler\sinc_resampler.cc">
       <Filter>resampler</Filter>
     </ClCompile>
+    <ClCompile Include="signal_processing\resample_fractional.c">
+      <Filter>signal_processing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

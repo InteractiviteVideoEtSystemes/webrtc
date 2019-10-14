@@ -194,6 +194,7 @@
     <ClCompile Include="signal_processing\resample_48khz.c" />
     <ClCompile Include="signal_processing\resample_by_2.c" />
     <ClCompile Include="signal_processing\resample_by_2_internal.c" />
+    <ClCompile Include="signal_processing\resample_fractional.c" />
     <ClCompile Include="signal_processing\splitting_filter.c" />
     <ClCompile Include="signal_processing\spl_init.c" />
     <ClCompile Include="signal_processing\spl_inl.c" />

@@ -69,7 +69,5 @@
 /modules/audio_coding/x64/
 /common_audio/x64/
 /modules/audio_processing/x64/
-/abseil-cpp/
-
 /.vscode
 !webrtc/*
