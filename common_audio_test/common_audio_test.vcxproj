@@ -33,9 +33,6 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\common_audio\audio_converter_unittest.cc" />
     <ClCompile Include="..\common_audio\audio_util_unittest.cc" />
     <ClCompile Include="..\common_audio\fir_filter_unittest.cc" />
@@ -46,17 +43,24 @@
     <ClCompile Include="..\common_audio\wav_file_unittest.cc" />
     <ClCompile Include="..\common_audio\wav_header_unittest.cc" />
     <ClCompile Include="..\common_audio\window_generator_unittest.cc" />
-    <ClCompile Include="test.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\test\scenario\performance_stats.cc" />
+    <ClCompile Include="..\test\testsupport\copy_to_file_audio_capturer.cc" />
+    <ClCompile Include="..\test\testsupport\file_utils.cc" />
+    <ClCompile Include="..\test\testsupport\file_utils_override.cc" />
+    <ClCompile Include="..\test\testsupport\perf_test.cc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common_audio\common_audio.vcxproj">
       <Project>{dac3e324-6f71-4e38-8d91-ca9234edda8f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\rtc_base\rtcbase.vcxproj">
+      <Project>{48e00dc6-723d-42db-8cc4-a7b30433dd45}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\webrtc-audio\abseil\abseil.vcxproj">
+      <Project>{2b005d97-ddea-42c7-b2a5-cef96a53d36c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\webrtc-audio\googletest\googletest.vcxproj">
+      <Project>{e1d89a1d-8544-4329-920f-db8857d15c09}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -86,14 +90,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WEBRTC_WIN;X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>..\..\googletest\googletest\include;..\..\googletest\googlemock\include;..;..\abseil-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

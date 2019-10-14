@@ -19,15 +19,15 @@
 #if defined(WEBRTC_WIN)
 #include <direct.h>
 #include <tchar.h>
-#include <windows.h>
+
 
 #include <algorithm>
 #include <codecvt>
 #include <locale>
 
+#include "rtc_base/win32.h"
 #include "Shlwapi.h"
 #include "WinDef.h"
-#include "rtc_base/win32.h"
 
 #define GET_CURRENT_DIR _getcwd
 #else
