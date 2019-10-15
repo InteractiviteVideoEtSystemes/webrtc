@@ -204,7 +204,6 @@
     <ClCompile Include="aec3\render_delay_buffer.cc" />
     <ClCompile Include="aec3\render_delay_controller.cc" />
     <ClCompile Include="aec3\render_delay_controller_metrics.cc" />
-    <ClCompile Include="aec3\render_reverb_model.cc" />
     <ClCompile Include="aec3\render_signal_analyzer.cc" />
     <ClCompile Include="aec3\residual_echo_estimator.cc" />
     <ClCompile Include="aec3\reverb_decay_estimator.cc" />

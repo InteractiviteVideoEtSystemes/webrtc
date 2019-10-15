@@ -386,9 +386,6 @@
     <ClCompile Include="aec3\render_delay_controller_metrics.cc">
       <Filter>aec3</Filter>
     </ClCompile>
-    <ClCompile Include="aec3\render_reverb_model.cc">
-      <Filter>aec3</Filter>
-    </ClCompile>
     <ClCompile Include="aec3\residual_echo_estimator.cc">
       <Filter>aec3</Filter>
     </ClCompile>
