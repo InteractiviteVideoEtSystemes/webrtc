@@ -12,15 +12,12 @@
 #define MODULES_AUDIO_PROCESSING_AEC_ECHO_CANCELLATION_H_
 
 #include <stddef.h>
-
-#include <memory>
-
-extern "C" {
-#include "common_audio/ring_buffer.h"
-}
-#include "modules/audio_processing/aec/aec_core.h"
+#include <stdint.h>
 #include "rtc_base/system/rtc_export.h"
-namespace webrtc {
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Errors
 #define AEC_UNSPECIFIED_ERROR 12000
@@ -32,7 +29,11 @@ namespace webrtc {
 // Warnings
 #define AEC_BAD_PARAMETER_WARNING 12050
 
-enum { kAecNlpConservative = 0, kAecNlpModerate, kAecNlpAggressive };
+    enum {
+      kAecNlpConservative = 0,
+      kAecNlpModerate,
+      kAecNlpAggressive
+    };
 
 enum { kAecFalse = 0, kAecTrue };
 
@@ -58,59 +59,6 @@ typedef struct {
   AecLevel aNlp;
   float divergent_filter_fraction;
 } AecMetrics;
-
-struct AecCore;
-
-class ApmDataDumper;
-
-typedef struct Aec {
-  Aec();
-  ~Aec();
-
-  std::unique_ptr<ApmDataDumper> data_dumper;
-
-  int delayCtr;
-  int sampFreq;
-  int splitSampFreq;
-  int scSampFreq;
-  float sampFactor;  // scSampRate / sampFreq
-  short skewMode;
-  int bufSizeStart;
-  int knownDelay;
-  int rate_factor;
-
-  short initFlag;  // indicates if AEC has been initialized
-
-  // Variables used for averaging far end buffer size
-  short counter;
-  int sum;
-  short firstVal;
-  short checkBufSizeCtr;
-
-  // Variables used for delay shifts
-  short msInSndCardBuf;
-  short filtDelay;  // Filtered delay estimate.
-  int timeForDelayChange;
-  int startup_phase;
-  int checkBuffSize;
-  short lastDelayDiff;
-
-  // Structures
-  void* resampler;
-
-  int skewFrCtr;
-  int resample;  // if the skew is small enough we don't resample
-  int highSkewCtr;
-  float skew;
-
-  RingBuffer* far_pre_buf;  // Time domain far-end pre-buffer.
-
-  int farend_started;
-
-  // Aec instance counter.
-  static int instance_count;
-  AecCore* aec;
-} Aec;
 
 /*
  * Allocates the memory needed by the AEC. The memory needs to be initialized
@@ -143,8 +91,8 @@ RTC_EXPORT void WebRtcAec_Free(void* aecInst);
  *                             -1: error
  */
 RTC_EXPORT int32_t WebRtcAec_Init(void* aecInst,
-                                 int32_t sampFreq,
-                                 int32_t scSampFreq);
+                                  int32_t sampFreq,
+                                  int32_t scSampFreq);
 
 /*
  * Inserts an 80 or 160 sample block of data into the farend buffer.
@@ -162,8 +110,8 @@ RTC_EXPORT int32_t WebRtcAec_Init(void* aecInst,
  *                              12000-12050: error code
  */
 RTC_EXPORT int32_t WebRtcAec_BufferFarend(void* aecInst,
-                               const float* farend,
-                               size_t nrOfSamples);
+                                          const float* farend,
+                                          size_t nrOfSamples);
 
 /*
  * Reports any errors that would arise if buffering a farend buffer
@@ -181,8 +129,8 @@ RTC_EXPORT int32_t WebRtcAec_BufferFarend(void* aecInst,
  *                              12000-12050: error code
  */
 RTC_EXPORT int32_t WebRtcAec_GetBufferFarendError(void* aecInst,
-                                       const float* farend,
-                                       size_t nrOfSamples);
+                                                  const float* farend,
+                                                  size_t nrOfSamples);
 
 /*
  * Runs the echo canceller on an 80 or 160 sample blocks of data.
@@ -208,12 +156,12 @@ RTC_EXPORT int32_t WebRtcAec_GetBufferFarendError(void* aecInst,
  *                              12000-12050: error code
  */
 RTC_EXPORT int32_t WebRtcAec_Process(void* aecInst,
-                          const float* const* nearend,
-                          size_t num_bands,
-                          float* const* out,
-                          size_t nrOfSamples,
-                          int16_t msInSndCardBuf,
-                          int32_t skew);
+                                     const float* const* nearend,
+                                     size_t num_bands,
+                                     float* const* out,
+                                     size_t nrOfSamples,
+                                     int16_t msInSndCardBuf,
+                                     int32_t skew);
 
 /*
  * This function enables the user to set certain parameters on-the-fly.
@@ -281,20 +229,12 @@ RTC_EXPORT int WebRtcAec_GetMetrics(void* handle, AecMetrics* metrics);
  *                              12000-12050: error code
  */
 RTC_EXPORT int WebRtcAec_GetDelayMetrics(void* handle,
-                              int* median,
-                              int* std,
-                              float* fraction_poor_delays);
+                                         int* median,
+                                         int* std,
+                                         float* fraction_poor_delays);
 
-// Returns a pointer to the low level AEC handle.
-//
-// Input:
-//  - handle                    : Pointer to the AEC instance.
-//
-// Return value:
-//  - AecCore pointer           : NULL for error.
-//
-struct AecCore* WebRtcAec_aec_core(void* handle);
-
-}  // namespace webrtc
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // MODULES_AUDIO_PROCESSING_AEC_ECHO_CANCELLATION_H_

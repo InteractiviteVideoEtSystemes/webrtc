@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NOMINMAX;WEBRTC_APM_DEBUG_DUMP=1;WEBRTC_WIN=1;WEBRTC_LIBRARY_IMPL;_DEBUG;AUDIOPROCESSING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WEBRTC_APM_DEBUG_DUMP=1;WEBRTC_WIN=1;WEBRTC_LIBRARY_IMPL;_DEBUG;AUDIOPROCESSING_EXPORTS;_WINDOWS;_USRDLL;WEBRTC_ENABLE_SYMBOL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..;..\..\abseil-cpp</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -97,6 +97,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <PreventDllBinding>true</PreventDllBinding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -105,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;AUDIOPROCESSING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WEBRTC_ENABLE_SYMBOL_EXPORT;WIN32;_DEBUG;AUDIOPROCESSING_EXPORTS;WEBRTC_LIBRARY_IMPL;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -133,20 +134,22 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;AUDIOPROCESSING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;AUDIOPROCESSING_EXPORTS;WEBRTC_APM_DEBUG_DUMP=0;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;WEBRTC_WIN;WEBRTC_ENABLE_SYMBOL_EXPORT;WEBRTC_LIBRARY_IMPL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..;..\..\abseil-cpp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -158,6 +161,7 @@
     <ClInclude Include="..\..\api\audio\echo_control.h" />
     <ClInclude Include="aec\aec_common.h" />
     <ClInclude Include="aec\aec_core.h" />
+    <ClInclude Include="aec\aec_internal.h" />
     <ClInclude Include="aec\echo_cancellation.h" />
     <ClInclude Include="agc\agc.h" />
     <ClInclude Include="agc\agc_manager_direct.h" />

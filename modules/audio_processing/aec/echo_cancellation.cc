@@ -12,7 +12,7 @@
  * Contains the API functions for the AEC.
  */
 #include "modules/audio_processing/aec/echo_cancellation.h"
-
+#include "modules/audio_processing/aec/aec_internal.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,6 +29,20 @@ namespace webrtc {
 
 Aec::Aec() = default;
 Aec::~Aec() = default;
+
+int Aec::instance_count = 0;
+
+AecCore* WebRtcAec_aec_core(void* handle) {
+  if (!handle) {
+    return NULL;
+  }
+  return reinterpret_cast<Aec*>(handle)->aec;
+}
+
+
+}  // namespace webrtc
+
+using namespace webrtc;
 
 // Measured delays [ms]
 // Device                Chrome  GTP
@@ -97,8 +111,6 @@ static const int kMaxTrustedDelayMs = 500;
 static const int kMaxBufSizeStart = 62;  // In partitions
 static const int sampMsNb = 8;           // samples per ms in nb
 static const int initCheck = 42;
-
-int Aec::instance_count = 0;
 
 // Estimates delay to set the position of the far-end buffer read pointer
 // (controlled by knownDelay)
@@ -360,7 +372,7 @@ int32_t WebRtcAec_Process(void* aecInst,
   return retVal;
 }
 
-int WebRtcAec_set_config(void* handle, AecConfig config) {
+RTC_EXPORT int WebRtcAec_set_config(void* handle, AecConfig config) {
   Aec* self = reinterpret_cast<Aec*>(handle);
   if (self->initFlag != initCheck) {
     return AEC_UNINITIALIZED_ERROR;
@@ -390,7 +402,7 @@ int WebRtcAec_set_config(void* handle, AecConfig config) {
   return 0;
 }
 
-int WebRtcAec_get_echo_status(void* handle, int* status) {
+RTC_EXPORT int WebRtcAec_get_echo_status(void* handle, int* status) {
   Aec* self = reinterpret_cast<Aec*>(handle);
   if (status == NULL) {
     return AEC_NULL_POINTER_ERROR;
@@ -523,12 +535,6 @@ int WebRtcAec_GetDelayMetrics(void* handle,
   return 0;
 }
 
-AecCore* WebRtcAec_aec_core(void* handle) {
-  if (!handle) {
-    return NULL;
-  }
-  return reinterpret_cast<Aec*>(handle)->aec;
-}
 
 static int ProcessNormal(Aec* aecInst,
                          const float* const* nearend,
@@ -861,4 +867,4 @@ static void EstBufDelayExtended(Aec* aecInst) {
     aecInst->knownDelay = WEBRTC_SPL_MAX((int)aecInst->filtDelay - 256, 0);
   }
 }
-}  // namespace webrtc
+

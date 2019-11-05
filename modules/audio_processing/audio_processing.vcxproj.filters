@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\api\audio\echo_control.h">
       <Filter>api\audio</Filter>
     </ClInclude>
+    <ClInclude Include="aec\aec_internal.h">
+      <Filter>aec\headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
