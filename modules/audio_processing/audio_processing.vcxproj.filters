@@ -55,6 +55,9 @@
     <Filter Include="echo_detector">
       <UniqueIdentifier>{b75dd766-d513-4935-b51d-0e3fb3384fe9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vad\headers">
+      <UniqueIdentifier>{4978cc45-f587-4876-b4ad-836dedc9a033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -98,6 +101,18 @@
     </ClInclude>
     <ClInclude Include="aec\aec_internal.h">
       <Filter>aec\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="vad\standalone_vad.h">
+      <Filter>vad\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="vad\vad_audio_proc.h">
+      <Filter>vad\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="vad\voice_activity_detector.h">
+      <Filter>vad\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="audio_buffer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -460,6 +475,15 @@
     </ClCompile>
     <ClCompile Include="aec3\shadow_filter_update_gain.cc">
       <Filter>aec3</Filter>
+    </ClCompile>
+    <ClCompile Include="audio_buffer.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="splitting_filter.cc">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="three_band_filter_bank.cc">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -165,8 +165,12 @@
     <ClInclude Include="aec\echo_cancellation.h" />
     <ClInclude Include="agc\agc.h" />
     <ClInclude Include="agc\agc_manager_direct.h" />
+    <ClInclude Include="audio_buffer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="vad\standalone_vad.h" />
+    <ClInclude Include="vad\vad_audio_proc.h" />
+    <ClInclude Include="vad\voice_activity_detector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\api\audio\audio_frame.cc" />
@@ -260,6 +264,7 @@
     <ClCompile Include="agc\agc_manager_direct.cc" />
     <ClCompile Include="agc\loudness_histogram.cc" />
     <ClCompile Include="agc\utility.cc" />
+    <ClCompile Include="audio_buffer.cc" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="echo_detector\circular_buffer.cc" />
     <ClCompile Include="echo_detector\mean_variance_estimator.cc" />
@@ -273,12 +278,14 @@
     <ClCompile Include="ns\nsx_core_c.c" />
     <ClCompile Include="ns\ns_core.c" />
     <ClCompile Include="residual_echo_detector.cc" />
+    <ClCompile Include="splitting_filter.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="three_band_filter_bank.cc" />
     <ClCompile Include="utility\block_mean_calculator.cc" />
     <ClCompile Include="utility\cascaded_biquad_filter.cc" />
     <ClCompile Include="utility\delay_estimator.cc" />
