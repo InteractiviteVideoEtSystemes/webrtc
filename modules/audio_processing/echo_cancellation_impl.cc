@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "modules/audio_processing/aec/aec_core.h"
+#include "modules/audio_processing/aec/aec_internal.h"
 #include "modules/audio_processing/aec/echo_cancellation.h"
 #include "modules/audio_processing/audio_buffer.h"
 #include "rtc_base/checks.h"
