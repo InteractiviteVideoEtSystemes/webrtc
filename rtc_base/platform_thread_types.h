@@ -38,7 +38,7 @@ typedef DWORD PlatformThreadRef;
 #elif defined(WEBRTC_FUCHSIA)
 typedef zx_handle_t PlatformThreadId;
 typedef zx_handle_t PlatformThreadRef;
-#elif defined(WEBRTC_POSIX)
+#elif defined(WEBRTC_POSIX) || defined(WEBRTC_MAC)
 typedef pid_t PlatformThreadId;
 typedef pthread_t PlatformThreadRef;
 #endif

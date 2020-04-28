@@ -20,7 +20,7 @@ class ScopedRegisterThreadForDebugging {
 #if defined(WEBRTC_ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD) 
   explicit ScopedRegisterThreadForDebugging(rtc::Location location);
   ~ScopedRegisterThreadForDebugging();
-#elif defined(WEBRTC_WIN)
+#elif defined(WEBRTC_WIN) || defined(WEBRTC_MAC)
   explicit ScopedRegisterThreadForDebugging(rtc::Location location);
   ~ScopedRegisterThreadForDebugging();
 #else
@@ -40,7 +40,7 @@ class ScopedRegisterThreadForDebugging {
 
 #if defined(WEBRTC_ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD)
 void PrintStackTracesOfRegisteredThreads();
-#elif defined(WEBRTC_WIN)
+#elif defined(WEBRTC_WIN) || defined(WEBRTC_MAC)
 void PrintStackTracesOfRegisteredThreads();
 #else
 inline void PrintStackTracesOfRegisteredThreads() {}
