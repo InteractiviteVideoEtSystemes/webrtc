@@ -11,7 +11,7 @@
 #ifndef RTC_BASE_IP_ADDRESS_H_
 #define RTC_BASE_IP_ADDRESS_H_
 
-#if defined(WEBRTC_POSIX)
+#if defined(WEBRTC_POSIX) || defined(WEBRTC_MAC)
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>

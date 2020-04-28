@@ -60,7 +60,7 @@ class RTC_LOCKABLE CriticalSection {
 
 #if defined(WEBRTC_WIN)
   mutable CRITICAL_SECTION crit_;
-#elif defined(WEBRTC_POSIX)
+#elif defined(WEBRTC_POSIX) || defined(WEBRTC_MAC)
 #if defined(WEBRTC_MAC) && !RTC_USE_NATIVE_MUTEX_ON_MAC
   // Number of times the lock has been locked + number of threads waiting.
   // TODO(tommi): We could use this number and subtract the recursion count

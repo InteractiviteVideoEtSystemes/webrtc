@@ -22,7 +22,7 @@
 #elif defined(WEBRTC_FUCHSIA)
 #include <zircon/types.h>
 #include <zircon/process.h>
-#elif defined(WEBRTC_POSIX)
+#elif defined(WEBRTC_POSIX) || defined(WEBRTC_MAC)
 #include <pthread.h>
 #include <unistd.h>
 #if defined(WEBRTC_MAC)
@@ -31,6 +31,7 @@
 #endif
 // clang-format on
 
+
 namespace rtc {
 #if defined(WEBRTC_WIN)
 typedef DWORD PlatformThreadId;
@@ -38,7 +39,10 @@ typedef DWORD PlatformThreadRef;
 #elif defined(WEBRTC_FUCHSIA)
 typedef zx_handle_t PlatformThreadId;
 typedef zx_handle_t PlatformThreadRef;
-#elif defined(WEBRTC_POSIX) || defined(WEBRTC_MAC)
+#elif defined(WEBRTC_MAC)
+    typedef pid_t PlatformThreadId;
+    typedef __darwin_pthread_t PlatformThreadRef;
+#elif defined(WEBRTC_POSIX)
 typedef pid_t PlatformThreadId;
 typedef pthread_t PlatformThreadRef;
 #endif
