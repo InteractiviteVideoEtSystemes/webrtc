@@ -763,6 +763,11 @@
 		7E93C9092458539D000FC6A6 /* delay_estimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E93C6EE2458539A000FC6A6 /* delay_estimator.h */; };
 		7E93C90A2458539D000FC6A6 /* ooura_fft_tables_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E93C6EF2458539A000FC6A6 /* ooura_fft_tables_common.h */; };
 		7E93C90B2458539D000FC6A6 /* delay_estimator_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E93C6F02458539A000FC6A6 /* delay_estimator_wrapper.h */; };
+		7EA4DDAE2460804B0055D3D4 /* libaudio_coding.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E046AD62457782900E658F8 /* libaudio_coding.a */; };
+		7EA4DDAF2460804C0055D3D4 /* libcommon_audio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E93C2CC24583DCD000FC6A6 /* libcommon_audio.a */; };
+		7EA4DDB02460804C0055D3D4 /* libpfffft.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E93C28F24583B97000FC6A6 /* libpfffft.a */; };
+		7EA4DDB12460804C0055D3D4 /* librnnoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E93C2B924583C97000FC6A6 /* librnnoise.a */; };
+		7EA4DDB22460804C0055D3D4 /* librtcbase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E0466C024573CD400E658F8 /* librtcbase.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1643,6 +1648,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7EA4DDAE2460804B0055D3D4 /* libaudio_coding.a in Frameworks */,
+				7EA4DDAF2460804C0055D3D4 /* libcommon_audio.a in Frameworks */,
+				7EA4DDB02460804C0055D3D4 /* libpfffft.a in Frameworks */,
+				7EA4DDB12460804C0055D3D4 /* librnnoise.a in Frameworks */,
+				7EA4DDB22460804C0055D3D4 /* librtcbase.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4284,6 +4294,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WEBRTC_APM_DEBUG_DUMP=0",
 					WEBRTC_NS_FIXED,
+					"$(inherited)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
