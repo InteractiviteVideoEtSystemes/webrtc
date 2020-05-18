@@ -28,14 +28,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="test_support">
       <UniqueIdentifier>{03976ef4-1d7f-4ca3-a484-77616e3b0746}</UniqueIdentifier>
     </Filter>
     <Filter Include="test_scenario">
       <UniqueIdentifier>{a7fcfcfb-aed1-49c0-8871-1d3691dcf885}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
