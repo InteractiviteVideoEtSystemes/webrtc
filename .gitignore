@@ -88,3 +88,4 @@ webrtc-audio/out/
 webrtc-audio/packages/
 webrtc-audio/x64/
 !webrtc/*
+.vs/
