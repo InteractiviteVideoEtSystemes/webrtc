@@ -2118,7 +2118,7 @@ int16_t WebRtcIsac_GetRedPayload(ISACStruct* ISAC_main_inst,
  *
  */
 void WebRtcIsac_version(char* version) {
-  strcpy_s(version, "4.3.0", 6);
+  strcpy_s(version, 6ULL, "4.3.0");
 }
 
 
