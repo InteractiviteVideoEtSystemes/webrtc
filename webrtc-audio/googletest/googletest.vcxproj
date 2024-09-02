@@ -26,6 +26,11 @@
     <ClCompile Include="..\..\googletest\googletest\src\gtest.cc" />
     <ClCompile Include="..\..\googletest\googletest\src\gtest_main.cc" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\doubango\doubango\googletest-master\GTest\GTest.vcxproj">
+      <Project>{90991b79-8b6e-4118-a531-e7007fb33386}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{E1D89A1D-8544-4329-920F-DB8857D15C09}</ProjectGuid>
